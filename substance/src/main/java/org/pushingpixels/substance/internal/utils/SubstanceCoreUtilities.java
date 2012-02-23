@@ -29,7 +29,27 @@
  */
 package org.pushingpixels.substance.internal.utils;
 
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dialog;
+import java.awt.FontMetrics;
+import java.awt.Frame;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Transparency;
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -37,18 +57,61 @@ import java.awt.image.VolatileImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
 
-import javax.swing.*;
-import javax.swing.plaf.*;
+import javax.swing.AbstractButton;
+import javax.swing.ButtonModel;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JInternalFrame;
+import javax.swing.JLayeredPane;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
+import javax.swing.JRootPane;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JToolBar;
+import javax.swing.JTree;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.plaf.ButtonUI;
+import javax.swing.plaf.IconUIResource;
+import javax.swing.plaf.UIResource;
 import javax.swing.text.JTextComponent;
 
-import com.sun.awt.AWTUtilities;
 import org.pushingpixels.lafwidget.LafWidgetUtilities;
 import org.pushingpixels.lafwidget.utils.TrackableThread;
-import org.pushingpixels.substance.api.*;
-import org.pushingpixels.substance.api.SubstanceConstants.*;
-import org.pushingpixels.substance.api.colorscheme.*;
+import org.pushingpixels.substance.api.ColorSchemeAssociationKind;
+import org.pushingpixels.substance.api.ComponentState;
+import org.pushingpixels.substance.api.SubstanceColorScheme;
+import org.pushingpixels.substance.api.SubstanceConstants.FocusKind;
+import org.pushingpixels.substance.api.SubstanceConstants.MenuGutterFillKind;
+import org.pushingpixels.substance.api.SubstanceConstants.ScrollPaneButtonPolicyKind;
+import org.pushingpixels.substance.api.SubstanceConstants.Side;
+import org.pushingpixels.substance.api.SubstanceConstants.TabContentPaneBorderKind;
+import org.pushingpixels.substance.api.SubstanceLookAndFeel;
+import org.pushingpixels.substance.api.SubstanceSkin;
+import org.pushingpixels.substance.api.UiThreadingViolationException;
+import org.pushingpixels.substance.api.colorscheme.BottleGreenColorScheme;
+import org.pushingpixels.substance.api.colorscheme.LightAquaColorScheme;
+import org.pushingpixels.substance.api.colorscheme.SunfireRedColorScheme;
+import org.pushingpixels.substance.api.colorscheme.SunsetColorScheme;
 import org.pushingpixels.substance.api.combo.ComboPopupPrototypeCallback;
 import org.pushingpixels.substance.api.painter.border.SubstanceBorderPainter;
 import org.pushingpixels.substance.api.painter.decoration.SubstanceDecorationPainter;
@@ -56,12 +119,18 @@ import org.pushingpixels.substance.api.painter.fill.SubstanceFillPainter;
 import org.pushingpixels.substance.api.shaper.SubstanceButtonShaper;
 import org.pushingpixels.substance.api.tabbed.TabCloseCallback;
 import org.pushingpixels.substance.internal.animation.TransitionAwareUI;
-import org.pushingpixels.substance.internal.ui.*;
+import org.pushingpixels.substance.internal.ui.SubstanceButtonUI;
+import org.pushingpixels.substance.internal.ui.SubstanceInternalFrameUI;
+import org.pushingpixels.substance.internal.ui.SubstanceRootPaneUI;
 import org.pushingpixels.substance.internal.utils.combo.SubstanceComboPopup;
-import org.pushingpixels.substance.internal.utils.icon.*;
+import org.pushingpixels.substance.internal.utils.icon.ArrowButtonTransitionAwareIcon;
+import org.pushingpixels.substance.internal.utils.icon.TransitionAware;
+import org.pushingpixels.substance.internal.utils.icon.TransitionAwareIcon;
 import org.pushingpixels.substance.internal.utils.menu.SubstanceMenu;
 import org.pushingpixels.substance.internal.utils.scroll.SubstanceScrollButton;
 import org.pushingpixels.trident.swing.SwingRepaintCallback;
+
+import com.sun.awt.AWTUtilities;
 
 /**
  * Various utility functions. This class is <b>for internal use only</b>.
@@ -81,6 +150,7 @@ public class SubstanceCoreUtilities {
 
     public static final boolean reallyThrow = Boolean.valueOf(System.getProperty("insubstantial.checkEDT", "false"));
     public static final boolean reallyPrint = Boolean.valueOf(System.getProperty("insubstantial.logEDT", "true"));
+    public static final HashSet<String> exceptionsTrace = new HashSet<String>();
 
 	public static interface TextComponentAware<T> {
 		public JTextComponent getTextComponent(T t);
@@ -2016,85 +2086,72 @@ public class SubstanceCoreUtilities {
 		}
 	}
 
-    public static boolean reallyPrintThreadingExceptions() {
-        return reallyPrint;
-    }
-
-    public static boolean reallyThrowThreadingExceptions() {
-        return reallyThrow;
-    }
-
-
-	/**
-	 * Tests UI threading violations on creating the specified component.
-	 * 
-	 * @param comp
-	 *            Component.
-	 * @throws UiThreadingViolationException
-	 *             If the component is created off Event Dispatch Thread.
-	 */
-	public static void testComponentCreationThreadingViolation(Component comp) {
-		if ((SubstanceCoreUtilities.reallyPrintThreadingExceptions() || SubstanceCoreUtilities.reallyThrowThreadingExceptions())
-            && !SwingUtilities.isEventDispatchThread())
+	 /**
+     * Tests UI threading violations.
+     * 
+     * @param message
+     *            Error message.
+     * @throws UiThreadingViolationException
+     *             If the component is created off Event Dispatch Thread.
+     */
+    public static void testThreadingViolation(String message) {
+        if ((reallyPrint || reallyThrow) && !SwingUtilities.isEventDispatchThread())
         {
-			UiThreadingViolationException uiThreadingViolationError = new UiThreadingViolationException(
-					"Component creation must be done on Event Dispatch Thread");
-            if (reallyPrintThreadingExceptions()) {
-                uiThreadingViolationError.printStackTrace(System.err);
-            }
-            if (reallyThrowThreadingExceptions()) {
-			    throw uiThreadingViolationError;
-            }
-		}
-	}
-
-	/**
-	 * Tests UI threading violations on changing the state the specified
-	 * component.
-	 * 
-	 * @param comp
-	 *            Component.
-	 * @throws UiThreadingViolationException
-	 *             If the component is changing state off Event Dispatch Thread.
-	 */
-	public static void testComponentStateChangeThreadingViolation(Component comp) {
-        if ((SubstanceCoreUtilities.reallyPrintThreadingExceptions() || SubstanceCoreUtilities.reallyThrowThreadingExceptions())
-            && !SwingUtilities.isEventDispatchThread())
-        {
-            UiThreadingViolationException uiThreadingViolationError = new UiThreadingViolationException(
-					"Component state change must be done on Event Dispatch Thread");
-            if (reallyPrintThreadingExceptions()) {
-                uiThreadingViolationError.printStackTrace(System.err);
-            }
-            if (reallyThrowThreadingExceptions()) {
-			    throw uiThreadingViolationError;
-            }
-		}
-	}
-
-	/**
-	 * Tests UI threading violations on closing the specified window.
-	 * 
-	 * @param w
-	 *            Window.
-	 * @throws UiThreadingViolationException
-	 *             If the window is closed off Event Dispatch Thread.
-	 */
-	public static void testWindowCloseThreadingViolation(Window w) {
-        if ((SubstanceCoreUtilities.reallyPrintThreadingExceptions() || SubstanceCoreUtilities.reallyThrowThreadingExceptions())
-            && !SwingUtilities.isEventDispatchThread())
-        {
-            UiThreadingViolationException uiThreadingViolationError = new UiThreadingViolationException(
-					"Window close must be done on Event Dispatch Thread");
-            if (reallyPrintThreadingExceptions()) {
-                uiThreadingViolationError.printStackTrace(System.err);
-            }
-            if (reallyThrowThreadingExceptions()) {
-			    throw uiThreadingViolationError;
+            // do action only once
+            if (!exceptionsTrace.contains(message)) {
+                // add this exception to trace
+                exceptionsTrace.add(message);
+                
+                if (reallyPrint)
+                    System.err.println("The following error is reported only on first occurence :");
+                
+                // and do action
+                UiThreadingViolationException uiThreadingViolationError = new UiThreadingViolationException(message);
+                if (reallyPrint)
+                    uiThreadingViolationError.printStackTrace(System.err);
+                if (reallyThrow)
+                    throw uiThreadingViolationError;
             }
         }
-	}
+    }
 
+    /**
+     * Tests UI threading violations on creating the specified component.
+     * 
+     * @param comp
+     *            Component.
+     * @throws UiThreadingViolationException
+     *             If the component is created off Event Dispatch Thread.
+     */
+    public static void testComponentCreationThreadingViolation(Component comp) {
+        testThreadingViolation("Component creation must be done on Event Dispatch Thread");
+    }
+
+    /**
+     * Tests UI threading violations on changing the state the specified
+     * component.
+     * 
+     * @param comp
+     *            Component.
+     * @throws UiThreadingViolationException
+     *             If the component is changing state off Event Dispatch Thread.
+     */
+    public static void testComponentStateChangeThreadingViolation(Component comp) {
+        testThreadingViolation("Component state change must be done on Event Dispatch Thread");
+    }
+
+    /**
+     * Tests UI threading violations on closing the specified window.
+     * 
+     * @param w
+     *            Window.
+     * @throws UiThreadingViolationException
+     *             If the window is closed off Event Dispatch Thread.
+     */
+    public static void testWindowCloseThreadingViolation(Window w) {
+        testThreadingViolation("Window close must be done on Event Dispatch Thread");
+    }
+    
 	public static void traceSubstanceApiUsage(Component comp, String message) {
 		Window w = SwingUtilities.getWindowAncestor(comp);
 		String wTitle = null;

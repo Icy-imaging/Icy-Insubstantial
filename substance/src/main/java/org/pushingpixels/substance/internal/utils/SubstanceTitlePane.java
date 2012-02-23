@@ -90,9 +90,9 @@ import org.pushingpixels.lafwidget.utils.RenderingUtils;
 import org.pushingpixels.lafwidget.utils.TrackableThread;
 import org.pushingpixels.substance.api.DecorationAreaType;
 import org.pushingpixels.substance.api.SubstanceColorScheme;
+import org.pushingpixels.substance.api.SubstanceConstants.SubstanceWidgetType;
 import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 import org.pushingpixels.substance.api.SubstanceSkin;
-import org.pushingpixels.substance.api.SubstanceConstants.SubstanceWidgetType;
 import org.pushingpixels.substance.api.skin.SkinInfo;
 import org.pushingpixels.substance.internal.painter.BackgroundPaintingUtils;
 import org.pushingpixels.substance.internal.ui.SubstanceButtonUI;
@@ -775,6 +775,9 @@ public class SubstanceTitlePane extends JComponent {
 				this.add(this.closeButton);
 			}
 		}
+        
+        // notify title pane changed
+        rootPane.firePropertyChange("titlePane", false, true);
 	}
 
 	/**
@@ -1019,7 +1022,9 @@ public class SubstanceTitlePane extends JComponent {
 	 *            if <code>true</code>, the window is in active state.
 	 */
 	void setActive(boolean isActive) {
-		this.getRootPane().repaint();
+        repaint();
+        // this can cause NPE
+//        this.getRootPane().repaint();
 	}
 
     /**
@@ -1894,6 +1899,10 @@ public class SubstanceTitlePane extends JComponent {
 			}
 		}
 	}
+    
+    public JMenuBar getMenuBar() {
+        return this.menuBar;
+    }
 
 	public AbstractButton getCloseButton() {
 		return this.closeButton;

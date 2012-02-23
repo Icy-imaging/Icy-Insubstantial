@@ -19,7 +19,8 @@ sourceSets {
 
 test {
   // if we are headless, don't run our tests
-  enabled = !Boolean.getBoolean("java.awt.headless")
+  enabled = false
+  //enabled = !Boolean.getBoolean("java.awt.headless")
 }
 
 jar {

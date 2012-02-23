@@ -1,7 +1,7 @@
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
-group = 'com.github.insubstantial'
+group = 'com.github.Icy-imaging'
 version = '7.2-SNAPSHOT'
 
 subprojects {
@@ -9,7 +9,7 @@ subprojects {
   apply plugin: 'maven'
   apply plugin: 'signing'
 
-  group = 'com.github.insubstantial'
+  group = 'com.github.Icy-imaging'
   version = '7.2-SNAPSHOT'
   versionKey = "7.2-magnificent"
   release = "internal"
@@ -25,7 +25,7 @@ subprojects {
 
   signing {
     required = { gradle.taskGraph.hasTask(uploadArchives) && !version.endsWith("SNAPSHOT") }
-    sign configurations.archives
+    //sign configurations.archives
   }
 
   repositories {

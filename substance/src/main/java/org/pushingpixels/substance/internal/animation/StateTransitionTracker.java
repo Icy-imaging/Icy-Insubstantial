@@ -35,14 +35,22 @@ import java.awt.event.FocusListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.ButtonModel;
+import javax.swing.CellRendererPane;
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.ListCellRenderer;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.EventListenerList;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
 import org.pushingpixels.lafwidget.animation.AnimationConfigurationManager;
 import org.pushingpixels.lafwidget.animation.AnimationFacet;
-import org.pushingpixels.substance.api.*;
+import org.pushingpixels.substance.api.ComponentState;
+import org.pushingpixels.substance.api.ComponentStateFacet;
 import org.pushingpixels.substance.api.renderers.SubstanceRenderer;
 import org.pushingpixels.substance.internal.utils.SubstanceCoreUtilities;
 import org.pushingpixels.trident.Timeline;
@@ -160,18 +168,8 @@ public class StateTransitionTracker {
 		}
 
 		void clear() {
-			if ((SubstanceCoreUtilities.reallyPrintThreadingExceptions() || SubstanceCoreUtilities.reallyThrowThreadingExceptions())
-                && !SwingUtilities.isEventDispatchThread())
-            {
-				UiThreadingViolationException uiThreadingViolationError = new UiThreadingViolationException(
-						"State tracking must be done on Event Dispatch Thread");
-                if (SubstanceCoreUtilities.reallyPrintThreadingExceptions()) {
-				    uiThreadingViolationError.printStackTrace(System.err);
-                }
-                if (SubstanceCoreUtilities.reallyThrowThreadingExceptions()) {
-    				throw uiThreadingViolationError;
-                }
-            }
+            SubstanceCoreUtilities.testThreadingViolation("State tracking must be done on Event Dispatch Thread");
+            
 			this.stateContributionMap.clear();
 			this.stateContributionMap.put(this.currState,
 					new StateContributionInfo(1.0f, 1.0f));

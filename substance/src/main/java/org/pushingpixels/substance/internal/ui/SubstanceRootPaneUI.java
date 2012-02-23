@@ -83,7 +83,6 @@ import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.UIResource;
 import javax.swing.plaf.basic.BasicRootPaneUI;
 
-import com.sun.awt.AWTUtilities;
 import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 import org.pushingpixels.substance.api.SubstanceSkin;
 import org.pushingpixels.substance.internal.animation.RootPaneDefaultButtonTracker;
@@ -92,6 +91,8 @@ import org.pushingpixels.substance.internal.utils.MemoryAnalyzer;
 import org.pushingpixels.substance.internal.utils.SubstanceColorUtilities;
 import org.pushingpixels.substance.internal.utils.SubstanceCoreUtilities;
 import org.pushingpixels.substance.internal.utils.SubstanceTitlePane;
+
+import com.sun.awt.AWTUtilities;
 
 /**
  * UI for root panes in <b>Substance </b> look and feel.
@@ -763,6 +764,9 @@ public class SubstanceRootPaneUI extends BasicRootPaneUI {
 			titlePane.setVisible(true);
 		}
 		this.titlePane = titlePane;
+        
+        // notify title pane changed
+        root.firePropertyChange("titlePane", false, true);
 	}
 
 	/**
