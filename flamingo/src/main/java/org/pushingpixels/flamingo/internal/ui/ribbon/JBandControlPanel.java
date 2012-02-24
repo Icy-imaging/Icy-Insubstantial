@@ -29,15 +29,24 @@
  */
 package org.pushingpixels.flamingo.internal.ui.ribbon;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.UIResource;
 
-import org.pushingpixels.flamingo.api.common.*;
-import org.pushingpixels.flamingo.api.ribbon.*;
+import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
+import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
+import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 
 /**
  * Control panel of a single {@link JRibbonBand}. This class is for internal use
@@ -181,9 +190,45 @@ public class JBandControlPanel extends AbstractBandControlPanel implements
 			this.galleryCount++;
 		}
 
+        /**
+         * Remove ribbon button from <code>this</code> control panel.
+         */
+        public synchronized void removeCommandButton(AbstractCommandButton button,
+                RibbonElementPriority priority) {
+            if ((button!= null) && (priority != null)) {
+                getRibbonButtons(priority).remove(button);
+                ribbonButtonsPriorities.remove(button);
+            }
+        }
+
+        /**
+         * Remove a in-ribbon gallery from <code>this</code> control panel.
+         */
+        public synchronized void removeRibbonGallery(JRibbonGallery gallery,
+                RibbonElementPriority priority) {
+            if ((gallery != null) && (priority != null)) {
+                getRibbonGalleries(priority).remove(gallery);
+                ribbonGalleriesPriorities.remove(gallery);
+    
+                if (galleryCount > 0)
+                    galleryCount--;
+                hasGalleries = (galleryCount > 0);
+            }
+        }
+
+        /**
+         * Remove a ribbon component from <code>this</code> control panel.
+         */
+        public synchronized void removeRibbonComponent(JRibbonComponent comp) {
+            if (comp != null) {
+                coreComps.remove(comp);
+                coreCompRowSpans.remove(comp);
+            }
+        }
+
 		/**
 		 * Sets new priority of a ribbon button in <code>this</code> control
-		 * panel.
+		 * panel group.
 		 * 
 		 * @param ribbonButton
 		 *            Gallery button.
@@ -208,7 +253,7 @@ public class JBandControlPanel extends AbstractBandControlPanel implements
 
 		/**
 		 * Sets new priority of an in-ribbon gallery in <code>this</code>
-		 * control panel.
+		 * control panel group.
 		 * 
 		 * @param ribbonGallery
 		 *            In-ribbon gallery.
@@ -242,14 +287,27 @@ public class JBandControlPanel extends AbstractBandControlPanel implements
 			this.coreCompRowSpans.put(comp, rowSpan);
 		}
 
-		/**
+        /**
+         * Retrieves all ribbon buttons from <code>this</code> control panel group.
+         * 
+         * @return All ribbon buttons from <code>this</code> control panel group.
+         */
+        public List<AbstractCommandButton> getAllCommandButtons() {
+            final ArrayList<AbstractCommandButton> result = new ArrayList<AbstractCommandButton>();
+            result.addAll(getRibbonButtons(RibbonElementPriority.LOW));
+            result.addAll(getRibbonButtons(RibbonElementPriority.MEDIUM));
+            result.addAll(getRibbonButtons(RibbonElementPriority.TOP));
+            return result;
+        }
+
+        /**
 		 * Retrieves all ribbon buttons of specified priority from
-		 * <code>this</code> control panel.
+		 * <code>this</code> control panel group.
 		 * 
 		 * @param priority
 		 *            Priority.
 		 * @return All ribbon buttons of specified priority from
-		 *         <code>this</code> control panel.
+		 *         <code>this</code> control panel group.
 		 */
 		public List<AbstractCommandButton> getRibbonButtons(
 				RibbonElementPriority priority) {
@@ -261,13 +319,40 @@ public class JBandControlPanel extends AbstractBandControlPanel implements
 		}
 
 		/**
+		 * Returns the priority of specified button.
+		 */
+		 public RibbonElementPriority getPriority(AbstractCommandButton button) {
+		     if (getRibbonButtons(RibbonElementPriority.LOW).indexOf(button) != -1) return
+		             RibbonElementPriority.LOW;
+             if (getRibbonButtons(RibbonElementPriority.MEDIUM).indexOf(button) != -1) return
+                     RibbonElementPriority.MEDIUM;
+             if (getRibbonButtons(RibbonElementPriority.TOP).indexOf(button) != -1) return
+                     RibbonElementPriority.TOP;
+             
+             return null;
+		}
+		 
+	    /**
+         * Retrieves all in-ribbon galleries from <code>this</code> control panel group.
+         * 
+         * @return All in-ribbon galleries from <code>this</code> control panel group.
+         */
+        public List<JRibbonGallery> getAllRibbonGalleries() {
+            final ArrayList<JRibbonGallery> result = new ArrayList<JRibbonGallery>(); 
+            result.addAll(getRibbonGalleries(RibbonElementPriority.LOW));
+            result.addAll(getRibbonGalleries(RibbonElementPriority.MEDIUM));
+            result.addAll(getRibbonGalleries(RibbonElementPriority.TOP));
+            return result;
+        }
+        
+		/**
 		 * Retrieves all in-ribbon galleries of specified priority from
-		 * <code>this</code> control panel.
+		 * <code>this</code> control panel group.
 		 * 
 		 * @param priority
 		 *            Priority.
 		 * @return All in-ribbon galleries of specified priority from
-		 *         <code>this</code> control panel.
+		 *         <code>this</code> control panel group.
 		 */
 		public List<JRibbonGallery> getRibbonGalleries(
 				RibbonElementPriority priority) {
@@ -276,7 +361,46 @@ public class JBandControlPanel extends AbstractBandControlPanel implements
 				return EMPTY_RIBBON_GALLERIES_LIST;
 			return result;
 		}
+		
+        /**
+         * Returns the priority of specified gallery.
+         */
+         public RibbonElementPriority getPriority(JRibbonGallery gallery) {
+             if (getRibbonGalleries(RibbonElementPriority.LOW).indexOf(gallery) != -1) return
+                     RibbonElementPriority.LOW;
+             if (getRibbonGalleries(RibbonElementPriority.MEDIUM).indexOf(gallery) != -1) return
+                     RibbonElementPriority.MEDIUM;
+             if (getRibbonGalleries(RibbonElementPriority.TOP).indexOf(gallery) != -1) return
+                     RibbonElementPriority.TOP;
+             
+             return null;
+        }
 
+         /**
+          * Returns indication whether <code>this</code> control panel is empty.
+          */
+         public boolean isEmpty() {
+             return (getCommandButtonsCount() == 0) && (getRibbonGalleriesCount() == 0)
+                     && (getRibbonCompsCount() == 0);
+         }
+         
+         /**
+          * Returns indication whether <code>this</code> control panel has
+          * ribbon buttons.
+          */
+         public boolean hasCommandButtons() {
+             return getCommandButtonsCount() > 0;
+         }
+         
+         /**
+          * Returns the number of ribbon buttons in <code>this</code> control panel.
+          */
+         public int getCommandButtonsCount() {
+             return getRibbonButtons(RibbonElementPriority.LOW).size() +
+                     getRibbonButtons(RibbonElementPriority.LOW).size() +
+                     getRibbonButtons(RibbonElementPriority.LOW).size();
+         }
+         
 		/**
 		 * Returns indication whether <code>this</code> control panel has
 		 * in-ribbon galleries.
@@ -298,6 +422,22 @@ public class JBandControlPanel extends AbstractBandControlPanel implements
 		public int getRibbonGalleriesCount() {
 			return this.galleryCount;
 		}
+		
+        /**
+         * Returns indication whether <code>this</code> control panel has
+         * ribbon components.
+         */
+        public boolean hasRibbonComps() {
+            return getRibbonCompsCount() > 0;
+        }
+        
+        /**
+         * Returns the number of ribbon components in <code>this</code> control panel.
+         */
+        public int getRibbonCompsCount() {
+            return getRibbonComps().size();
+        }
+
 
 		public List<JRibbonComponent> getRibbonComps() {
 			return this.coreComps;
@@ -398,11 +538,26 @@ public class JBandControlPanel extends AbstractBandControlPanel implements
 		if (this.controlPanelGroups.size() == 0)
 			this.startGroup();
 
-		this.controlPanelGroups.getLast().addCommandButton(ribbonButton,
-				priority);
-
-		super.add(ribbonButton);
+		addCommandButton(controlPanelGroups.size() - 1, ribbonButton, priority);
 	}
+	
+	/**
+     * Adds a new ribbon button to <code>this</code> control panel.
+     * 
+     * @param index
+     *            Group index where we want to add the button.
+     * @param ribbonButton
+     *            Ribbon button to add.
+     * @param priority
+     *            Ribbon button priority.
+     */
+    public synchronized void addCommandButton(int index,
+            AbstractCommandButton ribbonButton, RibbonElementPriority priority) {
+        this.controlPanelGroups.get(index).addCommandButton(ribbonButton,
+                priority);
+
+        super.add(ribbonButton);
+    }
 
 	/**
 	 * Adds a new in-ribbon gallery to <code>this</code> control panel.
@@ -414,27 +569,184 @@ public class JBandControlPanel extends AbstractBandControlPanel implements
 	 */
 	public synchronized void addRibbonGallery(JRibbonGallery ribbonGallery,
 			RibbonElementPriority priority) {
-		// check the name
-		String galleryName = ribbonGallery.getName();
-		if ((galleryName == null) || (galleryName.isEmpty())) {
-			throw new IllegalArgumentException(
-					"Ribbon gallery name null or empty");
-		}
-		if (this.galleryNameMap.containsKey(galleryName)) {
-			throw new IllegalArgumentException(
-					"Another riboon gallery with the same name already exists");
-		}
-
 		if (this.controlPanelGroups.size() == 0)
 			this.startGroup();
 
-		this.controlPanelGroups.getLast().addRibbonGallery(ribbonGallery,
-				priority);
-
-		this.galleryNameMap.put(galleryName, ribbonGallery);
-
-		super.add(ribbonGallery);
+		addRibbonGallery(controlPanelGroups.size() - 1, ribbonGallery, priority);
 	}
+	
+    /**
+     * Adds a new in-ribbon gallery to <code>this</code> control panel.
+     * 
+     * @param ribbonGallery
+     *            Ribbon gallery to add.
+     * @param priority
+     *            Ribbon gallery priority.
+     */
+    public synchronized void addRibbonGallery(int index, JRibbonGallery ribbonGallery,
+            RibbonElementPriority priority) {
+        // check the name
+        String galleryName = ribbonGallery.getName();
+        if ((galleryName == null) || (galleryName.isEmpty())) {
+            throw new IllegalArgumentException(
+                    "Ribbon gallery name null or empty");
+        }
+        if (this.galleryNameMap.containsKey(galleryName)) {
+            throw new IllegalArgumentException(
+                    "Another riboon gallery with the same name already exists");
+        }
+
+        controlPanelGroups.get(index).addRibbonGallery(ribbonGallery,
+                priority);
+
+        galleryNameMap.put(galleryName, ribbonGallery);
+
+        super.add(ribbonGallery);
+    }
+    
+    public void addRibbonComponent(JRibbonComponent comp) {
+        this.addRibbonComponent(comp, 1);
+    }
+
+    public void addRibbonComponent(JRibbonComponent comp, int rowSpan) {
+        if (this.controlPanelGroups.size() == 0)
+            this.startGroup();
+
+        addRibbonComponent(controlPanelGroups.size() - 1, comp, rowSpan);
+    }
+
+    public void addRibbonComponent(int index, JRibbonComponent comp, int rowSpan) {
+        controlPanelGroups.get(index).addRibbonComponent(comp, rowSpan);
+        super.add(comp);
+    }
+
+    /**
+     * Returns the index of the group containing the specified button (-1 if not found).
+     */
+    public synchronized int getCommandButtonGroupIndex(AbstractCommandButton button) {
+        for(int i = 0; i < controlPanelGroups.size(); i++) 
+            if (controlPanelGroups.get(i).getPriority(button) != null)
+                return i;
+        
+        return -1;
+    }
+
+    /**
+     * Returns the index of the group containing the specified ribbon gallery (-1 if not found).
+     */
+    public synchronized int getRibbonGalleryGroupIndex(JRibbonGallery gallery) {
+        for(int i = 0; i < controlPanelGroups.size(); i++) 
+            if (controlPanelGroups.get(i).getPriority(gallery) != null)
+                return i;
+        
+        return -1;
+    }
+
+    /**
+     * Returns the index of the group containing the specified ribbon component (-1 if not found).
+     */
+    public synchronized int getRibbonComponentGroupIndex(JRibbonComponent comp) {
+        for(int i = 0; i < controlPanelGroups.size(); i++) 
+            if (controlPanelGroups.get(i).getRibbonComps().contains(comp))
+                return i;
+        
+        return -1;
+    }
+
+	/**
+     * Remove the specified ribbon button from <code>this</code> control panel.
+     * 
+     * @param button
+     *            Ribbon button to remove.
+     */
+    public synchronized void removeCommandButton(AbstractCommandButton button) {
+        final int ind = getCommandButtonGroupIndex(button);
+        
+        if (ind != -1) {
+            final ControlPanelGroup cpg = controlPanelGroups.get(ind);
+            cpg.removeCommandButton(button, cpg.getPriority(button));
+            
+            super.remove(button);
+            revalidate();
+        }
+    }
+	
+    /**
+     * Adds a new in-ribbon gallery to <code>this</code> control panel.
+     * 
+     * @param gallery
+     *            Ribbon gallery to add.
+     */
+    public synchronized void removeRibbonGallery(JRibbonGallery gallery) {
+        final int ind = getRibbonGalleryGroupIndex(gallery);
+        
+        if (ind != -1) {
+            final ControlPanelGroup cpg = controlPanelGroups.get(ind);
+            cpg.removeRibbonGallery(gallery, cpg.getPriority(gallery));
+            
+            // the gallery should keep the same name else this do not work
+            this.galleryNameMap.remove(gallery.getName());
+
+            super.remove(gallery);
+            revalidate();
+        }
+    }
+    
+    public void removeRibbonComponent(JRibbonComponent comp) {
+        final int ind = getRibbonComponentGroupIndex(comp);
+        
+        if (ind != -1) {
+            final ControlPanelGroup cpg = controlPanelGroups.get(ind);
+            cpg.removeRibbonComponent(comp);
+            
+            super.remove(comp);
+            revalidate();
+        }
+    }
+    
+    public void removeAllCommandButtons() {
+        final List<AbstractCommandButton> buttons = getAllCommandButtons();
+        for(AbstractCommandButton button: buttons)
+            removeCommandButton(button);
+    }
+
+    public void removeAllRibbonGalleries() {
+        final List<JRibbonGallery> galleries = getAllRibbonGalleries();
+        for(JRibbonGallery gallery: galleries)
+            removeRibbonGallery(gallery);
+    }
+
+    public void removeAllRibbonComps() {
+        final List<JRibbonComponent> comps = getAllRibbonComps();
+        for(JRibbonComponent comp: comps)
+            removeRibbonComponent(comp);
+    }
+    
+     /**
+      * Returns the priority of the specified button (null if not found).
+      */
+     public synchronized RibbonElementPriority getPriority(AbstractCommandButton button) {
+         for(ControlPanelGroup cpg: controlPanelGroups) {
+             final RibbonElementPriority result = cpg.getPriority(button);
+             if (result != null)
+                 return result;
+         }
+         
+         return null;
+     }
+
+     /**
+      * Returns the priority of the specified ribbon gallery (null if not found).
+      */
+     public synchronized RibbonElementPriority getPriority(JRibbonGallery gallery) {
+         for(ControlPanelGroup cpg: controlPanelGroups) {
+             final RibbonElementPriority result = cpg.getPriority(gallery);
+             if (result != null)
+                 return result;
+         }
+         
+         return null;
+     }
 
 	/**
 	 * Sets new priority of a ribbon button in <code>this</code> control panel.
@@ -470,32 +782,62 @@ public class JBandControlPanel extends AbstractBandControlPanel implements
 		this.controlPanelGroups.getLast().setPriority(ribbonGallery,
 				newPriority);
 	}
+	
+	/**
+     * Retrieves all ribbon buttons from <code>this</code> control panel.
+     * 
+     * @return All ribbon buttons from <code>this</code> control panel.
+     */
+    public List<AbstractCommandButton> getAllCommandButtons() {
+        final List<AbstractCommandButton> result = new ArrayList<AbstractCommandButton>();
+        
+        for(ControlPanelGroup cpg: controlPanelGroups)
+            result.addAll(cpg.getAllCommandButtons());
+        
+        return result;
+    }
 
-	public void addRibbonComponent(JRibbonComponent comp) {
-		this.addRibbonComponent(comp, 1);
-	}
+    /**
+     * Retrieves all ribbon galleries from <code>this</code> control panel.
+     * 
+     * @return All ribbon galleries from <code>this</code> control panel.
+     */
+    public List<JRibbonGallery> getAllRibbonGalleries() {
+        final List<JRibbonGallery> result = new ArrayList<JRibbonGallery>();
+        
+        for(ControlPanelGroup cpg: controlPanelGroups)
+            result.addAll(cpg.getAllRibbonGalleries());
+        
+        return result;
+    }
 
-	public void addRibbonComponent(JRibbonComponent comp, int rowSpan) {
-		if (this.controlPanelGroups.size() == 0)
-			this.startGroup();
-
-		this.controlPanelGroups.getLast().addRibbonComponent(comp, rowSpan);
-		super.add(comp);
-	}
+    /**
+     * Retrieves all ribbon components from <code>this</code> control panel.
+     * 
+     * @return All ribbon galleries from <code>this</code> control panel.
+     */
+    public List<JRibbonComponent> getAllRibbonComps() {
+        final List<JRibbonComponent> result = new ArrayList<JRibbonComponent>();
+        
+        for(ControlPanelGroup cpg: controlPanelGroups)
+            result.addAll(cpg.getRibbonComps());
+        
+        return result;
+    }
 
 	public List<ControlPanelGroup> getControlPanelGroups() {
 		return Collections.unmodifiableList(this.controlPanelGroups);
 	}
 
 	public int getControlPanelGroupCount() {
-		if (this.controlPanelGroups == null)
-			return 1;
+        if (this.controlPanelGroups == null)
+            return 1;
 		return this.controlPanelGroups.size();
 	}
 
 	public String getControlPanelGroupTitle(int controlPanelGroupIndex) {
-		if (this.controlPanelGroups == null)
-			return null;
+        if (this.controlPanelGroups == null)
+            return null;
 		return this.controlPanelGroups.get(controlPanelGroupIndex).groupTitle;
 	}
 

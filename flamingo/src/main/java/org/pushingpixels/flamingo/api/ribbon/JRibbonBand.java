@@ -30,15 +30,25 @@
 package org.pushingpixels.flamingo.api.ribbon;
 
 import java.awt.event.ActionListener;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.SwingConstants;
 
-import org.pushingpixels.flamingo.api.common.*;
+import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
+import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
+import org.pushingpixels.flamingo.api.common.CommandButtonLayoutManager;
+import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
+import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
+import org.pushingpixels.flamingo.api.common.StringValuePair;
 import org.pushingpixels.flamingo.api.common.icon.ResizableIcon;
 import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
 import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
-import org.pushingpixels.flamingo.internal.ui.ribbon.*;
+import org.pushingpixels.flamingo.internal.ui.ribbon.CommandButtonLayoutManagerBigFixed;
+import org.pushingpixels.flamingo.internal.ui.ribbon.CommandButtonLayoutManagerBigFixedLandscape;
+import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
+import org.pushingpixels.flamingo.internal.ui.ribbon.JRibbonGallery;
 
 /**
  * Ribbon band component. Can host three types of content:
@@ -192,6 +202,16 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 		commandButton.setHorizontalAlignment(SwingConstants.LEFT);
 		this.controlPanel.addCommandButton(commandButton, priority);
 	}
+	
+	/**
+     * Removes the specified command button from <code>this</code> band.
+     * 
+     * @param commandButton
+     *            the command button to remove
+     */
+    public void removeCommandButton(AbstractCommandButton commandButton) {
+        this.controlPanel.removeCommandButton(commandButton);
+    }
 
 	public void addRibbonGallery(String galleryName,
 			List<StringValuePair<List<JCommandToggleButton>>> buttons,
@@ -249,7 +269,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 //		this.controlPanel.addRibbonGallery(gallery, priority);
 		addRibbonGallery(gallery, priority);
 	}
-
+	
 	/**
 	 * Adds the specified command toggle buttons to a button group in the
 	 * specified ribbon gallery.
@@ -298,6 +318,26 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 			RibbonElementPriority priority) {
 		controlPanel.addRibbonGallery(gallery, priority);
 	}
+
+    /**
+     * Removes the specified ribbon gallery from <code>this</code> band.
+     * 
+     * @param gallery
+     *            the ribbon gallery to remove
+     */
+    public void removeRibbonGallery(JRibbonGallery gallery) {
+        this.controlPanel.removeRibbonGallery(gallery);
+    }
+
+    /**
+     * Removes the specified ribbon gallery from <code>this</code> band.
+     * 
+     * @param galleryName
+     *            name of the ribbon gallery to remove
+     */
+    public void removeRibbonGallery(String galleryName) {
+        this.controlPanel.removeRibbonGallery(this.controlPanel.getRibbonGallery(galleryName));
+    }
 
 	/**
 	 * Removes command toggle buttons from the specified ribbon gallery.
@@ -431,6 +471,16 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 		}
 		this.controlPanel.addRibbonComponent(comp, rowSpan);
 	}
+
+    /**
+     * Removes the specified ribbon component from this ribbon band.
+     * 
+     * @param comp
+     *            The ribbon component to remove.
+     */
+    public void removeRibbonComponent(JRibbonComponent comp) {
+        this.controlPanel.removeRibbonComponent(comp);
+    }
 
 	/**
 	 * Starts a new unnamed group.
