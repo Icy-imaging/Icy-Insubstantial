@@ -242,9 +242,9 @@ public class SubstanceInternalFrameTitlePane extends
      *            if <code>true</code>, the window is in active state.
      */
     public void setActive(boolean isActive) {
-        repaint();
-        // this can cause NPE
-//        this.getRootPane().repaint();
+        if (getRootPane() != null) {
+            this.getRootPane().repaint();
+        }
     }
 
 	/*

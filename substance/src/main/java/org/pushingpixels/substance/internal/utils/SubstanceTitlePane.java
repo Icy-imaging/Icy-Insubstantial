@@ -1022,9 +1022,9 @@ public class SubstanceTitlePane extends JComponent {
 	 *            if <code>true</code>, the window is in active state.
 	 */
 	void setActive(boolean isActive) {
-        repaint();
-        // this can cause NPE
-//        this.getRootPane().repaint();
+        if (getRootPane() != null) {
+		    this.getRootPane().repaint();
+        }
 	}
 
     /**
