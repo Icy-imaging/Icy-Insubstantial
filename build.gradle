@@ -11,8 +11,7 @@ subprojects {
 
   group = 'com.github.Icy-imaging'
   version = '7.2-SNAPSHOT'
-  versionKey = "7.2-magnificent"
-  release = "internal"
+  ext.versionKey = "7.2-magnificent"
 
   sourceCompatibility = 1.6
   targetCompatibility = 1.6
@@ -74,7 +73,7 @@ subprojects {
     configuration = configurations.published
   }
 
-  configureBasePom = { pom ->
+  ext.configureBasePom = { pom ->
     pom.project {
       modelVersion '4.0.0'
       packaging 'jar'
@@ -110,7 +109,7 @@ task githubDist(type: Zip) {
 }
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '1.0-milestone-5'
+  gradleVersion = '1.0-rc-3'
 }
 
 def checkPasswords() {

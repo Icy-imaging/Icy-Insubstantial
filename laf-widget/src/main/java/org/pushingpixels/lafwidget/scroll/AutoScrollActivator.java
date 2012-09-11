@@ -74,8 +74,10 @@ public class AutoScrollActivator {
 		autoScrollProperties = new AutoScrollProperties();
 		autoScrollProperties.isDragMode = false;
 		JViewport viewport = scrollPane.getViewport();
-		autoScrollProperties.currentLocation = MouseInfo.getPointerInfo()
-				.getLocation();
+        PointerInfo pi = MouseInfo.getPointerInfo();
+        if (pi == null) return; // mouse not on any device
+        
+        autoScrollProperties.currentLocation = pi.getLocation();
 		SwingUtilities.convertPointFromScreen(
 				autoScrollProperties.currentLocation, viewport);
 		autoScrollProperties.startLocation = autoScrollProperties.currentLocation;
@@ -164,8 +166,10 @@ public class AutoScrollActivator {
 				case MouseEvent.MOUSE_MOVED:
 				case MouseEvent.MOUSE_DRAGGED:
 					JViewport viewport = scrollPane.getViewport();
-					autoScrollProperties.currentLocation = MouseInfo
-							.getPointerInfo().getLocation();
+                    PointerInfo pi = MouseInfo.getPointerInfo();
+                    if (pi == null) break; // pointer not on any device
+                    
+                    autoScrollProperties.currentLocation = pi.getLocation();
 					SwingUtilities.convertPointFromScreen(
 							autoScrollProperties.currentLocation, viewport);
 					if (!autoScrollProperties.isDragMode

@@ -1246,6 +1246,7 @@ public class BasicCheckRibbon extends JRibbonFrame {
 								"Help button clicked");
 					}
 				});
+        this.getRibbon().setHelpRichTooltip(new RichTooltip("Don't Get Excited", "This isn't the help documentation you are looking for."));
 
 		group1 = new RibbonContextualTaskGroup(resourceBundle
 				.getString("Group1.textTaskGroupTitle"), Color.red,

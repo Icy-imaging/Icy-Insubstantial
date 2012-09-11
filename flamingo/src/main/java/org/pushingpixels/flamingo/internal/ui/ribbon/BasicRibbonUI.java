@@ -1881,12 +1881,14 @@ public class BasicRibbonUI extends RibbonUI {
 
                                 // first, get the graphics config of where the mouse pointer curently is at
                                 PointerInfo pi = MouseInfo.getPointerInfo();
-                                GraphicsDevice gd = pi.getDevice();
                                 GraphicsConfiguration mgc = null;
-                                for (GraphicsConfiguration gc : gd.getConfigurations()) {
-                                    if (gc.getBounds().contains(pi.getLocation())) {
-                                        mgc = gc;
-                                        break;
+                                if (pi != null) {
+                                    GraphicsDevice gd = pi.getDevice();
+                                    for (GraphicsConfiguration gc : gd.getConfigurations()) {
+                                        if (gc.getBounds().contains(pi.getLocation())) {
+                                            mgc = gc;
+                                            break;
+                                        }
                                     }
                                 }
                                 if (mgc == null) {
@@ -2025,6 +2027,7 @@ public class BasicRibbonUI extends RibbonUI {
 
             if (helpListener != null) {
                 this.helpButton = new JCommandButton("", this.ribbon.getHelpIcon());
+                this.helpButton.setActionRichTooltip(this.ribbon.getHelpRichTooltip());
                 this.helpButton.setDisplayState(CommandButtonDisplayState.SMALL);
                 this.helpButton.setCommandButtonKind(CommandButtonKind.ACTION_ONLY);
                 this.helpButton.getActionModel().addActionListener(helpListener);

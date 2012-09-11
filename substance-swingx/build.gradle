@@ -1,7 +1,7 @@
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
-swingXVersion = "1.6.2-2"
+ext.swingXVersion = "1.6.3"
 
 configurations {
   testCompile { extendsFrom compile }
@@ -12,24 +12,25 @@ sourceSets {
   main
   test
   tools {
-    compileClasspath = sourceSets.main.classes + sourceSets.test.classes + configurations.toolsCompile + configurations.testCompile
+    compileClasspath = sourceSets.main.output + sourceSets.test.output + configurations.toolsCompile + configurations.testCompile
   }
 }
 
 dependencies {
   compile project(":substance")
-  compile group: 'org.swinglabs', name: 'swingx-core', version: swingXVersion
-  testCompile project(":substance").sourceSets.test.classes
+  compile group: 'org.swinglabs.swingx', name: 'swingx-core', version: swingXVersion
+  testCompile project(":substance").sourceSets.test.output
   testCompile group: 'com.jgoodies', name: 'forms', version: '1.2.0'
-  toolsCompile project(":substance").sourceSets.tools.classes
+  toolsCompile project(":substance").sourceSets.tools.output
   toolsCompile group: 'org.easytesting', name: 'fest-swing', version: '1.2.1'
+  toolsCompile group: 'asm', name: 'asm-all', version: '2.2.3'
 }
 
 task augmentation(dependsOn: classes) {
   description = "Performs code augmentaiton for the laf-plugin and laf-widget libraries on the substance jar classes"
 
   doLast {
-    augmentClassPath = configurations.toolsCompile.asPath + File.pathSeparator + configurations.compile.asPath
+    def augmentClassPath = configurations.toolsCompile.asPath + File.pathSeparator + configurations.compile.asPath
 
     ant.taskdef(name: 'delegate-augment', classname: "org.pushingpixels.lafwidget.ant.AugmentTask", classpath: augmentClassPath)
     ant.taskdef(name: 'delegate-update-augment', classname: "org.pushingpixels.lafwidget.ant.AugmentUpdateTask", classpath: augmentClassPath)
@@ -37,20 +38,20 @@ task augmentation(dependsOn: classes) {
     ant.taskdef(name: 'icon-ghosting-augment', classname: "org.pushingpixels.lafwidget.ant.AugmentIconGhostingTask", classpath: augmentClassPath)
     ant.taskdef(name: 'container-ghosting-augment', classname: "org.pushingpixels.lafwidget.ant.AugmentContainerGhostingTask", classpath: augmentClassPath)
 
-    verboseAugmentation = false
+    def verboseAugmentation = false
 
     // Delegate augmentation
     ant.'delegate-update-augment'(verbose: verboseAugmentation, pattern: ".*UI\u002Eclass") {
-      classpathset(dir: sourceSets.main.output.classesDir)
+      sourceSets.main.output.addToAntBuilder(ant, 'classpathset', FileCollection.AntType.FileSet)
     }
 
     ant.'delegate-augment'(verbose: verboseAugmentation, pattern: ".*UI\u002Eclass") {
-      classpathset(dir: sourceSets.main.output.classesDir)
+      sourceSets.main.output.addToAntBuilder(ant, 'classpathset', FileCollection.AntType.FileSet)
     }
 
     // Container ghosting augmentation
     ant.'container-ghosting-augment'(verbose: verboseAugmentation) {
-      classpathset(dir: sourceSets.main.output.classesDir)
+      sourceSets.main.output.addToAntBuilder(ant, 'classpathset', FileCollection.AntType.FileSet)
       containerghosting(className: "org.pushingpixels.substance.swingx.SubstanceStatusBarUI", toInjectAfterOriginal: "true")
       containerghosting(className: "org.pushingpixels.substance.swingx.SubstanceTaskPaneContainerUI", toInjectAfterOriginal: "true")
     }
@@ -73,7 +74,7 @@ jar {
 task testJar(type: Jar) {
   classifier = 'tst'
 
-  from sourceSets.test.classes
+  from sourceSets.test.output
 
   manifest {
     attributes(

@@ -123,7 +123,9 @@ public class StarDust extends JFrame {
 			@Override
 			public void onTimelinePulse(float durationFraction,
 					float timelinePosition) {
-				Point mouseLoc = MouseInfo.getPointerInfo().getLocation();
+                PointerInfo pi = MouseInfo.getPointerInfo();
+                if (pi == null) return;  //pointer not on a graphics device
+                Point mouseLoc = pi.getLocation();
 				SwingUtilities.convertPointFromScreen(mouseLoc, mainPanel);
 				double currX = mouseLoc.getX();
 				double currY = mouseLoc.getY();

@@ -35,7 +35,7 @@ jar {
 task testJar(type: Jar) {
   classifier = 'tst'
 
-  from sourceSets.test.classes
+  from sourceSets.test.output
 
   manifest {
     attributes(

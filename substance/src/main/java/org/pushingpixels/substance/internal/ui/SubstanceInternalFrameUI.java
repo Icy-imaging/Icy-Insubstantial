@@ -98,7 +98,7 @@ public class SubstanceInternalFrameUI extends BasicInternalFrameUI {
 
     @Override
     protected void installComponents() {
-        frame.setOpaque(false);
+        frame.setOpaque(!SubstanceCoreUtilities.isRoundedCorners(frame));
         super.installComponents();
     }
 
@@ -124,28 +124,32 @@ public class SubstanceInternalFrameUI extends BasicInternalFrameUI {
 		this.substancePropertyListener = new PropertyChangeListener() {
 			@Override
             public void propertyChange(PropertyChangeEvent evt) {
-				if (JInternalFrame.IS_CLOSED_PROPERTY.equals(evt
-						.getPropertyName())) {
+                String propertyName = evt.getPropertyName();
+				if (JInternalFrame.IS_CLOSED_PROPERTY.equals(propertyName)) {
 					titlePane.uninstall();
 					JDesktopIcon jdi = frame.getDesktopIcon();
 					SubstanceDesktopIconUI ui = (SubstanceDesktopIconUI) jdi
 							.getUI();
 					ui.uninstallIfNecessary(jdi);
-				} else if ("background".equals(evt.getPropertyName())) {
+				} else if ("background".equals(propertyName)) {
 					Color newBackgr = (Color) evt.getNewValue();
 					if (!(newBackgr instanceof UIResource)) {
 						getTitlePane().setBackground(newBackgr);
 						frame.getDesktopIcon().setBackground(newBackgr);
 					}
-				} else if ("ancestor".equals(evt.getPropertyName())) {
+				} else if ("ancestor".equals(propertyName)) {
 					// fix for issue 344 - reopening an internal frame
 					// that has been closed.
 					JDesktopIcon jdi = frame.getDesktopIcon();
 					SubstanceDesktopIconUI ui = (SubstanceDesktopIconUI) jdi
 							.getUI();
 					ui.installIfNecessary(jdi);
-				} else if (JInternalFrame.IS_SELECTED_PROPERTY.equals(evt.getPropertyName())) {
+				} else if (JInternalFrame.IS_SELECTED_PROPERTY.equals(propertyName)) {
                     titlePane.setActive((Boolean)evt.getNewValue());
+                } else if (SubstanceLookAndFeel.WINDOW_ROUNDED_CORNERS.equals(propertyName)
+                        || JInternalFrame.IS_MAXIMUM_PROPERTY.equals(propertyName)) 
+                {
+                    frame.setOpaque(!SubstanceCoreUtilities.isRoundedCorners(frame));
                 }
 			}
 		};

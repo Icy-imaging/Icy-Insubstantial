@@ -194,6 +194,7 @@ public class ColorPicker extends AbstractColorChooserPanel {
 	protected void updatePicker() {
 		if (pickerFrame != null && pickerFrame.isShowing()) {
 			PointerInfo info = MouseInfo.getPointerInfo();
+            if (info == null) return;  //pointer not on a graphics device
 			Point mouseLoc = info.getLocation();
 			pickerFrame.setLocation(mouseLoc.x - pickerFrame.getWidth() / 2,
 					mouseLoc.y - pickerFrame.getHeight() / 2);
@@ -282,6 +283,8 @@ public class ColorPicker extends AbstractColorChooserPanel {
 		pickerTimer.stop();
 		pickerFrame.setVisible(false);
 		PointerInfo info = MouseInfo.getPointerInfo();
+        if (info == null) return;  //pointer not on a graphics device
+        
 		Point loc = info.getLocation();
 		Color c = robot.getPixelColor(loc.x + pickOffset.x, loc.y
 				+ pickOffset.y);

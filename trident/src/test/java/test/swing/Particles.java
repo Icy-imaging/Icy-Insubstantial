@@ -203,7 +203,9 @@ public class Particles {
 				@Override
 				public void onTimelinePulse(float durationFraction,
 						float timelinePosition) {
-					Point mouseLoc = MouseInfo.getPointerInfo().getLocation();
+                    PointerInfo pi = MouseInfo.getPointerInfo();
+                    Point mouseLoc = pi.getLocation();
+                    if (pi == null) return;  //pointer not on a graphics device
 					SwingUtilities.convertPointFromScreen(mouseLoc,
 							ParticlesPanel.this);
 					boolean isInside = (mouseLoc.x >= 0) && (mouseLoc.y >= 0)

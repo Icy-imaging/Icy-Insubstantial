@@ -204,19 +204,6 @@ public class SubstanceComboPopup extends BasicComboPopup {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see javax.swing.plaf.basic.BasicComboPopup#show()
-	 */
-	@Override
-	public void show() {
-		this.setListSelection(this.comboBox.getSelectedIndex());
-
-		Point location = this.getPopupLocation();
-		this.show(this.comboBox, location.x, location.y);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see javax.swing.plaf.basic.BasicComboPopup#hide()
 	 */
 	@Override

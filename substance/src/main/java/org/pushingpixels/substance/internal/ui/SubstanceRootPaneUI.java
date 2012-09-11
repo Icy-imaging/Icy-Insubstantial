@@ -46,6 +46,7 @@ import java.awt.LayoutManager;
 import java.awt.LayoutManager2;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.PointerInfo;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -1181,7 +1182,8 @@ public class SubstanceRootPaneUI extends BasicRootPaneUI {
 		private final PrivilegedExceptionAction getLocationAction = new PrivilegedExceptionAction() {
 			@Override
             public Object run() throws HeadlessException {
-				return MouseInfo.getPointerInfo().getLocation();
+                PointerInfo pi = MouseInfo.getPointerInfo();
+                return pi == null ? null : pi.getLocation();
 			}
 		};
 
@@ -1332,9 +1334,11 @@ public class SubstanceRootPaneUI extends BasicRootPaneUI {
 				try {
 					windowPt = (Point) AccessController
 							.doPrivileged(this.getLocationAction);
-					windowPt.x = windowPt.x - this.dragOffsetX;
-					windowPt.y = windowPt.y - this.dragOffsetY;
-					w.setLocation(windowPt);
+                    if (windowPt != null) {
+                        windowPt.x = windowPt.x - this.dragOffsetX;
+                        windowPt.y = windowPt.y - this.dragOffsetY;
+                        w.setLocation(windowPt);
+                    }
 				} catch (PrivilegedActionException ignored) {
 				}
 			} else if (this.dragCursor != 0) {
@@ -1666,6 +1670,12 @@ public class SubstanceRootPaneUI extends BasicRootPaneUI {
         public void componentResized(ComponentEvent e) {
             if (e.getComponent() instanceof Window) {
                 Window w = (Window) e.getComponent();
+                if ((w instanceof Frame && !((Frame)w).isUndecorated())
+                    || (w instanceof Dialog && !((Dialog)w).isUndecorated()))
+                {
+                    return; // don't touch the shape of decorated windows
+                }
+                    
                 if (w instanceof RootPaneContainer) {
                     JRootPane jrp = ((RootPaneContainer)w).getRootPane();
                     if ((jrp.getWindowDecorationStyle() == JRootPane.NONE)

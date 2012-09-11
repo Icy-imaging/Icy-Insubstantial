@@ -1124,7 +1124,10 @@ public class SubstanceTabbedPaneUI extends BasicTabbedPaneUI {
 		if (modelStateInfo != null) {
 			finalAlpha += 0.5f * tabTracker
 					.getFacetStrength(ComponentStateFacet.ROLLOVER);
-		} else {
+            if (tabTracker.getFacetStrength(ComponentStateFacet.SELECTION) == 1.0f) {
+                finalAlpha = 1.0f;
+            }
+        } else {
 			ComponentState tabState = getTabState(tabIndex);
 			if (tabState.isFacetActive(ComponentStateFacet.ROLLOVER)
 					|| tabState.isFacetActive(ComponentStateFacet.SELECTION)) {

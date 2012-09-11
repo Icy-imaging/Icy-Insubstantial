@@ -35,7 +35,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.swing.*;
@@ -83,7 +83,7 @@ public class JRibbonFrame extends JFrame {
 
 	private boolean wasSetIconImagesCalled;
 
-    protected Executor setAppIconExecutor = Executors.newSingleThreadExecutor();
+    protected ExecutorService setAppIconExecutor = Executors.newSingleThreadExecutor();
 	/**
 	 * Custom layout manager that enforces the {@link JRibbon} location at
 	 * {@link BorderLayout#NORTH}.
@@ -137,7 +137,7 @@ public class JRibbonFrame extends JFrame {
 						"setComponentMixingCutoutShape", Component.class,
 						Shape.class);
 				mSetComponentMixing.invoke(null, this, new Rectangle());
-			} catch (Throwable t) {
+			} catch (Throwable ignored) {
 			}
 		}
 
@@ -325,9 +325,15 @@ public class JRibbonFrame extends JFrame {
 		this.initRibbon();
 	}
 
+    @Override
+    public void dispose() {
+        setAppIconExecutor.shutdownNow();
+        super.dispose();
+    }
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.swing.JFrame#setLayout(java.awt.LayoutManager)
 	 */
 	@Override
@@ -561,23 +567,21 @@ public class JRibbonFrame extends JFrame {
 				// still loading?
 				if (icon instanceof AsynchronousLoading) {
 					AsynchronousLoading async = (AsynchronousLoading) icon;
-					if (async.isLoading()) {
-						final CountDownLatch latch = new CountDownLatch(1);
-						final boolean[] status = new boolean[1];
-						AsynchronousLoadListener all = new AsynchronousLoadListener() {
-							@Override
-                            public void completed(boolean success) {
-								status[0] = success;
-								latch.countDown();
-							}
-						};
-						async.addAsynchronousLoadListener(all);
-						try {
+                    final CountDownLatch latch = new CountDownLatch(1);
+                    AsynchronousLoadListener asyncListener = new AsynchronousLoadListener() {
+                        @Override
+                        public void completed(boolean success) {
+                            latch.countDown();
+                        }
+                    };
+                    async.addAsynchronousLoadListener(asyncListener);
+                    if (async.isLoading()) {
+                        try {
 							latch.await();
-						} catch (InterruptedException ie) {
+						} catch (InterruptedException ignored) {
 						}
-						async.removeAsynchronousLoadListener(all);
-					}
+                    }
+                    async.removeAsynchronousLoadListener(asyncListener);
 				}
 				setApplicationAndMenuButtonIcon(icon);
 			}
@@ -678,7 +682,7 @@ public class JRibbonFrame extends JFrame {
 				async.addAsynchronousLoadListener(all);
 				try {
 					latch.await();
-				} catch (InterruptedException ie) {
+				} catch (InterruptedException ignored) {
 				}
 				async.removeAsynchronousLoadListener(all);
 				if (!status[0]) {

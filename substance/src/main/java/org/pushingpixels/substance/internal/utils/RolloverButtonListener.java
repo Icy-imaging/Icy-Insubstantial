@@ -170,6 +170,7 @@ public class RolloverButtonListener extends BasicButtonListener {
 			}
 			try {
 				PointerInfo pi = MouseInfo.getPointerInfo();
+                if (pi == null) return;  //pointer not on a graphics device
 				int px = pi.getLocation().x
 						- this.button.getLocationOnScreen().x;
 				int py = pi.getLocation().y

@@ -76,7 +76,7 @@ public class RootPaneDefaultButtonTracker extends
 		// Create weak reference.
 		this.buttonRef = new WeakReference<JButton>(jbutton);
 		// Create coalesced timer.
-		this.timeline = new Timeline(jbutton);
+		this.timeline = new Timeline(this);
 		this.timeline.addCallback(this);
 		// Store event handler and initial cycle count.
 		RootPaneDefaultButtonTracker.trackers.put(jbutton, this);

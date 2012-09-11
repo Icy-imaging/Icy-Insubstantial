@@ -76,6 +76,7 @@ import org.pushingpixels.lafplugin.PluginManager;
 import org.pushingpixels.lafwidget.LafWidgetRepository;
 import org.pushingpixels.lafwidget.animation.AnimationConfigurationManager;
 import org.pushingpixels.lafwidget.animation.AnimationFacet;
+import org.pushingpixels.lafwidget.utils.LookUtils;
 import org.pushingpixels.substance.api.SubstanceConstants.MenuGutterFillKind;
 import org.pushingpixels.substance.api.SubstanceConstants.SubstanceWidgetType;
 import org.pushingpixels.substance.api.combo.ComboPopupPrototypeCallback;
@@ -1810,6 +1811,11 @@ public abstract class SubstanceLookAndFeel extends BasicLookAndFeel {
 				.getCurrentKeyboardFocusManager();
 		this.currentKeyboardFocusManager
 				.addPropertyChangeListener(this.focusOwnerChangeListener);
+		if (!LookUtils.IS_OS_WINDOWS
+				|| System.getProperty("java.version").compareTo("1.6.0_10") < 0) {
+			UIManager.put(WINDOW_ROUNDED_CORNERS, Boolean.FALSE);
+		}
+
 	}
 
 	/*

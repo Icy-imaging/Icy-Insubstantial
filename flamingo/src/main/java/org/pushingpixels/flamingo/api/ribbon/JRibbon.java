@@ -206,6 +206,15 @@ public class JRibbon extends JComponent {
 	 */
 	private ActionListener helpActionListener;
 
+    /**
+     * When the {@link #helpIcon} is not <code>null</code>, this rich tooltip
+     * will be shown when the user mouses over the icon.
+     *
+     * @see #setHelpRichTooltip(org.pushingpixels.flamingo.api.common.RichTooltip)
+     * @see #getHelpRichTooltip()
+     */
+    private RichTooltip helpRichTooltip;
+
 	/**
 	 * Visibility status of the contextual task group. Must contain a value for
 	 * each group in {@link #contextualTaskGroups}.
@@ -484,6 +493,31 @@ public class JRibbon extends JComponent {
 		return this.helpActionListener;
 	}
 
+    /**
+     * Sets the rich tooltip of the help button. Fires an
+     * stateChanged event.
+     *
+     * @param tooltip
+     *            The rich tooltip of the help button.
+     * @see #getHelpRichTooltip()
+     * @see #configureHelp(org.pushingpixels.flamingo.api.common.icon.ResizableIcon, java.awt.event.ActionListener)
+     */
+    public synchronized void setHelpRichTooltip(RichTooltip tooltip) {
+        RichTooltip old = this.helpRichTooltip;
+        this.helpRichTooltip = tooltip;
+        this.fireStateChanged();
+    }
+
+    /**
+     * Returns the rich tooltip of the help button.
+     *
+     * @return The rich tooltip of the help button.
+     * @see #setHelpRichTooltip(org.pushingpixels.flamingo.api.common.RichTooltip)
+     * @see #configureHelp(org.pushingpixels.flamingo.api.common.icon.ResizableIcon, java.awt.event.ActionListener)
+     */
+    public synchronized RichTooltip getHelpRichTooltip() {
+        return this.helpRichTooltip;
+    }
     /**
      * Adds a component to the 'Help Panel.'  This is the area where the
      * help button lives. and is the far right area of the main tab area.

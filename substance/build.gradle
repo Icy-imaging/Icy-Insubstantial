@@ -10,7 +10,7 @@ sourceSets {
   main
   test
   tools {
-    compileClasspath = sourceSets.main.classes + sourceSets.test.classes + configurations.toolsCompile + configurations.testCompile
+    compileClasspath = sourceSets.main.output + sourceSets.test.output + configurations.toolsCompile + configurations.testCompile
   }
 }
 
@@ -20,11 +20,11 @@ dependencies {
     transitive = false
   }
 
-  compile project(":trident") {classifier = "swing"}
-  compile project(":laf-widget") { transitive = false }
-  compile project(":laf-plugin") { transitive = false }
+  compile project(path: ":trident")
+  compile project(path: ":laf-widget", transitive: false)
+  compile project(path: ":laf-plugin", transitive: false)
   testCompile group: 'com.jgoodies', name: 'forms', version: '1.2.0'
-  testCompile group: 'org.swinglabs', name: 'swingx-core', version: '1.6.2-2'
+  testCompile group: 'org.swinglabs.swingx', name: 'swingx-core', version: '1.6.3'
   toolsCompile group: 'org.easytesting', name: 'fest-swing', version: '1.2.1'
   toolsCompile group: 'asm', name: 'asm-all', version: '2.2.3'
 }
@@ -33,7 +33,7 @@ task augmentation(dependsOn: classes) {
   description = "Performs code augmentaiton for the laf-plugin and laf-widget libraries on the substance jar classes"
 
   doLast {
-    augmentClassPath = configurations.toolsCompile.asPath
+    def augmentClassPath = configurations.toolsCompile.asPath
 
     ant.taskdef(name: 'delegate-augment', classname: "org.pushingpixels.lafwidget.ant.AugmentTask", classpath: augmentClassPath)
     ant.taskdef(name: 'delegate-update-augment', classname: "org.pushingpixels.lafwidget.ant.AugmentUpdateTask", classpath: augmentClassPath)
@@ -41,27 +41,27 @@ task augmentation(dependsOn: classes) {
     ant.taskdef(name: 'icon-ghosting-augment', classname: "org.pushingpixels.lafwidget.ant.AugmentIconGhostingTask", classpath: augmentClassPath)
     ant.taskdef(name: 'container-ghosting-augment', classname: "org.pushingpixels.lafwidget.ant.AugmentContainerGhostingTask", classpath: augmentClassPath)
 
-    verboseAugmentation = false
+    def verboseAugmentation = false
 
     // Delegate augmentation
     ant.'delegate-update-augment'(verbose: verboseAugmentation, pattern: ".*UI\u002Eclass") {
-      classpathset(dir: sourceSets.main.output.classesDir)
+      sourceSets.main.output.addToAntBuilder(ant, 'classpathset', FileCollection.AntType.FileSet)
     }
 
     ant.'delegate-augment'(verbose: verboseAugmentation, pattern: ".*UI\u002Eclass") {
-      classpathset(dir: sourceSets.main.output.classesDir)
+      sourceSets.main.output.addToAntBuilder(ant, 'classpathset', FileCollection.AntType.FileSet)
     }
 
     // Icon ghosting augmentation
     ant.'icon-ghosting-augment'(verbose: verboseAugmentation) {
-      classpathset(dir: sourceSets.main.output.classesDir)
+      sourceSets.main.output.addToAntBuilder(ant, 'classpathset', FileCollection.AntType.FileSet)
       iconghosting(className: "org.pushingpixels.substance.internal.ui.SubstanceButtonUI", methodName: "paintIcon")
       iconghosting(className: "org.pushingpixels.substance.internal.ui.SubstanceToggleButtonUI", methodName: "paintIcon")
     }
 
     // Container ghosting augmentation
     ant.'container-ghosting-augment'(verbose: verboseAugmentation) {
-      classpathset(dir: sourceSets.main.output.classesDir)
+      sourceSets.main.output.addToAntBuilder(ant, 'classpathset', FileCollection.AntType.FileSet)
       containerghosting(className: "org.pushingpixels.substance.internal.ui.SubstanceDesktopPaneUI", toInjectAfterOriginal: "true")
       containerghosting(className: "org.pushingpixels.substance.internal.ui.SubstanceMenuBarUI", toInjectAfterOriginal: "true")
       containerghosting(className: "org.pushingpixels.substance.internal.ui.SubstanceMenuUI", toInjectAfterOriginal: "true")
@@ -92,14 +92,11 @@ task liteJar(type: Jar) {
 
   classifier = 'lite'
 
-  from sourceSets.main.classes
+  from sourceSets.main.output
   exclude 'org/pushingpixels/substance/internal/contrib/randelshofer/**'
   exclude 'org/pushingpixels/substance/internal/contrib/xoetrope/**'
   exclude 'org/pushingpixels/substance/internal/ui/SubstanceColorChooserUI*'
   exclude 'org/pushingpixels/lafwidget/ant/**'
-
-  from zipTree('lib/build/laf-plugin.jar')
-  from zipTree('lib/build/laf-widget.jar')
 
   manifest {
     attributes(
@@ -113,7 +110,7 @@ task liteJar(type: Jar) {
 task testJar(type: Jar) {
   classifier = 'tst'
 
-  from sourceSets.test.classes
+  from sourceSets.test.output
 
   manifest {
     attributes(
@@ -126,7 +123,7 @@ task testJar(type: Jar) {
 task testLiteJar(type: Jar) {
   classifier = 'tst-lite'
 
-  from sourceSets.test.classes
+  from sourceSets.test.output
 
   manifest {
     attributes(
@@ -139,7 +136,7 @@ task testLiteJar(type: Jar) {
 
 task toolsJar(type: Jar) {
   classifier = 'tools'
-  from sourceSets.tools.classes
+  from sourceSets.tools.output
   manifest {
     attributes(
         "Substance-Version": version,
@@ -228,5 +225,16 @@ task jitterbug(type: JavaExec) {
 task testCheck(type: JavaExec) {
   main = 'test.Check'
   debug = Boolean.valueOf(System.getProperty('debug', 'true'))
+  classpath = sourceSets.test.runtimeClasspath
+}
+
+task testFoo(type: JavaExec) {
+  main = 'Foo'
+  debug = Boolean.valueOf(System.getProperty('debug', 'false'))
+  classpath = sourceSets.test.runtimeClasspath
+}
+task testTridentLeakSnippet(type: JavaExec) {
+  main = 'TridentLeakSnippet'
+  debug = Boolean.valueOf(System.getProperty('debug', 'false'))
   classpath = sourceSets.test.runtimeClasspath
 }
