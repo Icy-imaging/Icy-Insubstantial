@@ -1,7 +1,7 @@
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
-ext.swingXVersion = "1.6.3"
+swingXVersion = "1.6.3"
 
 configurations {
   testCompile { extendsFrom compile }
@@ -10,7 +10,7 @@ configurations {
 
 sourceSets {
   main
-  test
+//  test
   tools {
     compileClasspath = sourceSets.main.output + sourceSets.test.output + configurations.toolsCompile + configurations.testCompile
   }
@@ -19,8 +19,8 @@ sourceSets {
 dependencies {
   compile project(":substance")
   compile group: 'org.swinglabs.swingx', name: 'swingx-core', version: swingXVersion
-  testCompile project(":substance").sourceSets.test.output
-  testCompile group: 'com.jgoodies', name: 'forms', version: '1.2.0'
+//  testCompile project(":substance").sourceSets.test.output
+//  testCompile group: 'com.jgoodies', name: 'forms', version: '1.2.0'
   toolsCompile project(":substance").sourceSets.tools.output
   toolsCompile group: 'org.easytesting', name: 'fest-swing', version: '1.2.1'
   toolsCompile group: 'asm', name: 'asm-all', version: '2.2.3'

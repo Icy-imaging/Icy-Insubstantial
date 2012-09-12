@@ -29,6 +29,41 @@
  */
 package org.pushingpixels.substance.internal.utils;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.FontMetrics;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.LayoutManager;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.AbstractButton;
+import javax.swing.ButtonModel;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JInternalFrame;
+import javax.swing.JInternalFrame.JDesktopIcon;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
+import javax.swing.JRootPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.plaf.MenuBarUI;
+import javax.swing.plaf.UIResource;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
+
 import org.pushingpixels.lafwidget.LafWidgetUtilities;
 import org.pushingpixels.substance.api.DecorationAreaType;
 import org.pushingpixels.substance.api.SubstanceColorScheme;
@@ -39,19 +74,6 @@ import org.pushingpixels.substance.internal.ui.SubstanceButtonUI;
 import org.pushingpixels.substance.internal.ui.SubstanceMenuBarUI;
 import org.pushingpixels.substance.internal.utils.icon.SubstanceIconFactory;
 import org.pushingpixels.substance.internal.utils.icon.TransitionAwareIcon;
-
-import javax.swing.*;
-import javax.swing.JInternalFrame.JDesktopIcon;
-import javax.swing.plaf.MenuBarUI;
-import javax.swing.plaf.UIResource;
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 /**
  * UI for internal frame title pane in <b>Substance </b> look and feel.
@@ -328,17 +350,17 @@ public class SubstanceInternalFrameTitlePane extends
 		int rightEnd;
 
 		if (leftToRight) {
-//          xOffset = 8;
-//          Icon icon = this.frame.getFrameIcon();
-//          if (icon != null) {
-//              xOffset += icon.getIconWidth() + 5;
-//          }
+			xOffset = 5;
+			Icon icon = this.frame.getFrameIcon();
+			if (icon != null) {
+				xOffset += icon.getIconWidth() + 5;
+			}
 
-            leftEnd = (this.menuBar == null) ? 8
-                    : (8+this.menuBar.getWidth() + 5);
-            xOffset = leftEnd;
-//          if (icon != null)
-//              leftEnd += (icon.getIconWidth() + 5);
+			leftEnd = (this.menuBar == null) ? 0
+					: (this.menuBar.getWidth() + 5);
+			xOffset += leftEnd;
+			if (icon != null)
+				leftEnd += (icon.getIconWidth() + 5);
 
             rightEnd = width - 5;
 
@@ -680,25 +702,6 @@ public class SubstanceInternalFrameTitlePane extends
 		this.enableActions();
 	}
 
-    
-    @Override
-    protected JMenuBar createSystemMenuBar() {
-        menuBar = new SubstanceMenuBar();
-        this.menuBar.setFocusable(false);
-        this.menuBar.setBorderPainted(false);
-        this.menuBar.setOpaque(true);
-        return menuBar;
-    }
-    
-    @Override
-    protected JMenu createSystemMenu()
-    {
-        JMenu menu = new JMenu(" ");
-        menu.setOpaque(false);
-        menu.setBackground(null);
-        return menu;
-    }
-
     /*
 	 * (non-Javadoc)
 	 * 
@@ -864,9 +867,8 @@ public class SubstanceInternalFrameTitlePane extends
 					.isLeftToRight();
 
             int w = getWidth();
-            int h = getHeight();
-            int x = 0;
-            int y = 2;
+			int x = leftToRight ? w : 0;
+			int y;
             int spacing;
 
             // assumes all buttons have the same dimensions
@@ -874,7 +876,7 @@ public class SubstanceInternalFrameTitlePane extends
             int buttonHeight = closeButton.getIcon().getIconHeight();
             int buttonWidth = closeButton.getIcon().getIconWidth();
 
-            y = (h - buttonHeight) / 2;
+			y = (getHeight() - buttonHeight) / 2;
 
             Icon icon = frame.getFrameIcon();
 			int iconHeight = 0;
@@ -885,8 +887,6 @@ public class SubstanceInternalFrameTitlePane extends
 			}
 			int xMenuBar = (leftToRight) ? 5 : w - 16 - 5;
 			menuBar.setBounds(xMenuBar, (getHeight() - iconHeight) / 2, iconWidth, iconHeight);
-
-            x = leftToRight ? w : 0;
 
             if (frame.isClosable()) {
 				// if (isPalette) {

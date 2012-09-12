@@ -11,7 +11,7 @@ subprojects {
 
   group = 'com.github.Icy-imaging'
   version = '7.2-SNAPSHOT'
-  ext.versionKey = "7.2-magnificent"
+  versionKey = "7.2-magnificent"
 
   sourceCompatibility = 1.6
   targetCompatibility = 1.6
@@ -73,7 +73,7 @@ subprojects {
     configuration = configurations.published
   }
 
-  ext.configureBasePom = { pom ->
+  configureBasePom = { pom ->
     pom.project {
       modelVersion '4.0.0'
       packaging 'jar'
