@@ -190,6 +190,8 @@ public class BasicRibbonApplicationMenuPopupPanelUI extends BasicPopupPanelUI {
 							.getMainActionListener());
 					commandButton.setActionKeyTip(menuEntry.getActionKeyTip());
 					commandButton.setPopupKeyTip(menuEntry.getPopupKeyTip());
+                    commandButton.setActionRichTooltip(menuEntry.getActionRichTooltip());
+                    commandButton.setPopupRichTooltip(menuEntry.getPopupRichTooltip());
 					if (menuEntry.getDisabledIcon() != null) {
 						commandButton.setDisabledIcon(menuEntry
 								.getDisabledIcon());
@@ -301,9 +303,19 @@ public class BasicRibbonApplicationMenuPopupPanelUI extends BasicPopupPanelUI {
 				g.drawLine(xToPaint, y, xToPaint, y + height);
 			}
 		});
-		this.panelLevel2.setPreferredSize(new Dimension(30 * FlamingoUtilities
-				.getFont(this.panelLevel1, "Ribbon.font", "Button.font",
-						"Panel.font").getSize() - 30, 10));
+
+        // check to see if we hide second level menus 
+        Object o = null;
+        if (this.applicationMenuPopupPanel.getAppMenuButton() != null) {
+            o = this.applicationMenuPopupPanel.getAppMenuButton().getRibbon().getClientProperty("ribbon.hideSecondary");
+        }
+        if (o instanceof Boolean && (Boolean)o) {
+            this.panelLevel2.setPreferredSize(new Dimension(0, 10));
+        } else {
+		    this.panelLevel2.setPreferredSize(new Dimension(30 * FlamingoUtilities
+		        	.getFont(this.panelLevel1, "Ribbon.font", "Button.font",
+				    		"Panel.font").getSize() - 30, 10));
+        }
 
 		mainPanel.add(this.panelLevel2, BorderLayout.CENTER);
 

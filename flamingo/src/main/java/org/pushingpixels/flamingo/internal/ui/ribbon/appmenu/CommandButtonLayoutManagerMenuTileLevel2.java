@@ -52,15 +52,17 @@ public class CommandButtonLayoutManagerMenuTileLevel2 implements
 
 	@Override
 	public Dimension getPreferredSize(AbstractCommandButton commandButton) {
-		Insets borderInsets = commandButton.getInsets();
-		int bx = borderInsets.left + borderInsets.right;
-		int by = borderInsets.top + borderInsets.bottom;
 		FontMetrics fm = commandButton.getFontMetrics(commandButton.getFont());
 		JSeparator jsep = new JSeparator(JSeparator.VERTICAL);
 
 		int titleWidth = fm.stringWidth(commandButton.getText());
 		int layoutHGap = 2 * FlamingoUtilities.getHLayoutGap(commandButton);
 		int layoutVGap = 2 * FlamingoUtilities.getVLayoutGap(commandButton);
+
+		Insets borderInsets = commandButton.getInsets();
+		int bx = borderInsets.left + borderInsets.right;
+		int by = borderInsets.top + borderInsets.bottom + layoutVGap*2;
+
 		int widthMed = this.getPreferredIconSize()
 				+ 2
 				* layoutHGap

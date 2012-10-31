@@ -33,6 +33,7 @@ import java.awt.event.ActionListener;
 
 import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
+import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.icon.ResizableIcon;
 
 /**
@@ -92,6 +93,18 @@ abstract class RibbonApplicationMenuEntry {
 	 * this menu entry.
 	 */
 	protected String popupKeyTip;
+
+	/**
+	 * Optional tooltip for the action area of the command button that
+	 * represents this menu entry.
+	 */
+	protected RichTooltip actionRichTooltip;
+
+	/**
+	 * Optional tooltip for the popup area of the command button that represents
+	 * this menu entry.
+	 */
+	protected RichTooltip popupRichTooltip;
 
 	/**
 	 * Creates the basic metadata description of a {@link RibbonApplicationMenu}
@@ -246,6 +259,60 @@ abstract class RibbonApplicationMenuEntry {
 	 */
 	public void setPopupKeyTip(String popupKeyTip) {
 		this.popupKeyTip = popupKeyTip;
+	}
+
+	/**
+	 * Returns the rich tooltip for the action area of the command
+     * button that represents this menu entry.
+	 *
+	 * @return The rich tooltip for the action area of the command
+     * button that represents this menu entry.
+	 * @see #setPopupTooltip(RichTooltip)
+	 * @see #getActionRichTooltip()
+	 */
+	public RichTooltip getActionRichTooltip() {
+		return this.actionRichTooltip;
+	}
+
+	/**
+	 * Sets the rich tooltip for the action area of the command
+     * button that represents this menu entry.
+	 *
+	 * @param actionRichTooltip
+	 *            The rich tooltip for the action area of the command
+     *            button that represents this menu entry.
+	 * @see #getActionRichTooltip()
+	 * @see #setActionTooltip(RichTooltip)
+	 */
+	public void setActionRichTooltip(RichTooltip actionRichTooltip) {
+		this.actionRichTooltip = actionRichTooltip;
+	}
+
+	/**
+	 * Returns the rich tooltip for the popup area of the command
+     * button that represents this menu entry.
+	 *
+	 * @return The rich tooltip for the popup area of the command
+     * button that represents this menu entry.
+	 * @see #setPopupTooltip(RichTooltip)
+	 * @see #getActionRichTooltip()
+	 */
+	public RichTooltip getPopupRichTooltip() {
+		return this.popupRichTooltip;
+	}
+
+	/**
+	 * Sets the rich tooltip for the popup area of the command
+     * button that represents this menu entry.
+	 *
+	 * @param popupRichTooltip
+	 *            The rich tooltip for the popup area of the command
+     *            button that represents this menu entry.
+	 * @see #getPopupRichTooltip()
+	 * @see #setActionTooltip(RichTooltip)
+	 */
+	public void setPopupRichTooltip(RichTooltip popupRichTooltip) {
+		this.popupRichTooltip = popupRichTooltip;
 	}
 
 	/**

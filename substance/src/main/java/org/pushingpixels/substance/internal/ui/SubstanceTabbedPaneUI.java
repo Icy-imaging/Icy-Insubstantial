@@ -2762,8 +2762,14 @@ public class SubstanceTabbedPaneUI extends BasicTabbedPaneUI {
 	 *         rotated.
 	 */
 	protected boolean toRotateTabsOnPlacement(int tabPlacement) {
-		return (tabPlacement == SwingConstants.LEFT)
-				|| (tabPlacement == SwingConstants.RIGHT);
+        Object rotateProperty = tabPane.getClientProperty(SubstanceLookAndFeel.TABBED_PANE_ROTATE_SIDE_TABS);
+        if (!(rotateProperty instanceof Boolean)) {
+            rotateProperty = UIManager.get(SubstanceLookAndFeel.TABBED_PANE_ROTATE_SIDE_TABS);
+
+        }
+        boolean rotate = (rotateProperty instanceof Boolean) ? (Boolean)rotateProperty : true;
+
+        return  rotate && ( (tabPlacement == SwingConstants.LEFT) || (tabPlacement == SwingConstants.RIGHT) );
 	}
 
 	private StateTransitionTracker getTracker(final int tabIndex,

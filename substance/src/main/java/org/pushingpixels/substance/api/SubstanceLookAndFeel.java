@@ -814,6 +814,80 @@ public abstract class SubstanceLookAndFeel extends BasicLookAndFeel {
 	 */
 	public final static String TABBED_PANE_CONTENT_BORDER_KIND = "substancelaf.tabbedPaneContentBorderKind";
 
+
+	/**
+	 * Client property name for specifying wheter tabs shown on the left or right 
+     * will be rotated vertically. This property can be specified either on a 
+     * single {@link JTabbedPane} or on * {@link UIManager}. The value should a 
+     * Boolean. By default, the rotation is enabled.
+	 * 
+	 * <p>
+	 * Example of setting that all tabbed panes should not rotate the tabs:
+	 * </p>
+	 * <code>
+	 * UIManager.put(SubstanceLookAndFeel.TABBED_PANE_ROTATE_SIDE_TABS, <br>
+	 * &nbsp;&nbsp;Boolean.FALSE);
+	 * </code>
+	 * 
+	 * <p>
+	 * Example of specifying that the specific tabbed pane tabbed panes should not rotate the tabs:
+	 * </p>
+	 * <code>
+	 * JTabbedPane jtpMain = new JTabbedPane();<br>
+	 * jtpMain.putClientProperty(SubstanceLookAndFeel.TABBED_PANE_ROTATE_SIDE_TABS, <br>
+	 * &nbsp;&nbsp;Boolean.FALSE);
+	 * </code>
+	 * 
+	 * @since version 7.2
+	 */
+	public final static String TABBED_PANE_ROTATE_SIDE_TABS = "substancelaf.rotate";
+
+	/**
+	 * Client property name for specifying the leading vertical line on a table.
+     * Normally the presence of the leading vertical line on a table is driven
+     * by the presence or absence of a row header.
+     *
+     * <p>
+     * <ul>
+     * <li>The default <code>null</code> - The line is driven by the presence of row headers
+     * <li><code>true</code> - The line is always drawn.
+     * <li><code>false</code> - The line is never drawn.
+     * </ul>
+     * </p>
+
+	 * <code>
+	 * JTable jtable = new JTable();<br>
+	 * jtable.putClientProperty(SubstanceLookAndFeel.TABLE_LEADING_VERTICAL_LINE, <br>
+	 * &nbsp;&nbsp;false);
+	 * </code>
+	 *
+	 * @since version 7.2
+	 */
+	public final static String TABLE_LEADING_VERTICAL_LINE = "substancelaf.tableLeadingVerticalLine";
+
+	/**
+	 * Client property name for specifying the trailing verticle line on a table.
+     * Normally the presence of the leading vertical line on a table is driven
+     * by the width of the table and the width of the children
+     *
+     * <p>
+     * <ul>
+     * <li>The default <code>null</code> - The line is driven by whether it fits within the view of the scroll pane (true) or not (false)
+     * <li><code>true</code> - The line is always drawn.
+     * <li><code>false</code> - The line is never drawn.
+     * </ul>
+     * </p>
+
+	 * <code>
+	 * JTable jtable = new JTable();<br>
+	 * jtable.putClientProperty(SubstanceLookAndFeel.TABLE_TRAILING_VERTICAL_LINE, <br>
+	 * &nbsp;&nbsp;false);
+	 * </code>
+	 *
+	 * @since version 7.2
+	 */
+	public final static String TABLE_TRAILING_VERTICAL_LINE = "substancelaf.tableTrailingVerticalLine";
+
 	/**
 	 * Client property name for specifying combo popup flyout orientation. This
 	 * property can be set on either a specific {@link JComboBox} or globally on

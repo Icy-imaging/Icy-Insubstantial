@@ -119,6 +119,9 @@ public class SubstanceTableUI extends BasicTableUI implements
 
 	private StateTransitionMultiTracker<TableCellId> stateTransitionMultiTracker;
 
+    protected Boolean drawLeadingVerticalLine;
+    protected Boolean drawTrailingVerticalLine;
+
 	/**
 	 * Cell renderer insets. Is computed in {@link #installDefaults()} and
 	 * reused in
@@ -289,6 +292,9 @@ public class SubstanceTableUI extends BasicTableUI implements
 		this.cellRendererInsets = SubstanceSizeUtils
 				.getTableCellRendererInsets(SubstanceSizeUtils
 						.getComponentFontSize(table));
+
+        drawLeadingVerticalLine = (Boolean) table.getClientProperty(SubstanceLookAndFeel.TABLE_LEADING_VERTICAL_LINE);
+        drawTrailingVerticalLine = (Boolean) table.getClientProperty(SubstanceLookAndFeel.TABLE_TRAILING_VERTICAL_LINE);
 	}
 
 	/**
@@ -585,6 +591,13 @@ public class SubstanceTableUI extends BasicTableUI implements
                         }
                     }
 				}
+                
+                if (SubstanceLookAndFeel.TABLE_LEADING_VERTICAL_LINE.equals(evt.getPropertyName())) {
+                    drawLeadingVerticalLine = (Boolean) evt.getNewValue();
+                }
+                if (SubstanceLookAndFeel.TABLE_TRAILING_VERTICAL_LINE.equals(evt.getPropertyName())) {
+                    drawTrailingVerticalLine = (Boolean) evt.getNewValue();
+                }
 			}
 		};
 		this.table
@@ -831,16 +844,26 @@ public class SubstanceTableUI extends BasicTableUI implements
 	private boolean hasTrailingVerticalGridLine(TableColumnModel cm, int column) {
 		boolean toDrawLine = (column != (cm.getColumnCount() - 1));
 		if (!toDrawLine) {
-			Container parent = this.table.getParent();
+            if (drawTrailingVerticalLine != null) {
+                toDrawLine = drawTrailingVerticalLine;
+            } else {
+				Container parent = this.table.getParent();
 			toDrawLine = (parent != null)
-					&& (parent.getWidth() > this.table.getWidth());
+                        && (parent.getWidth() >= this.table.getWidth());
+            }
 		}
 		return toDrawLine;
 	}
 
 	private boolean hasLeadingVerticalGridLine(TableColumnModel cm, int column) {
-		if (column != 0)
+		if (column != 0) {
 			return false;
+        }
+
+        if (drawLeadingVerticalLine != null) {
+            return drawLeadingVerticalLine;
+        }
+
 		Container parent = this.table.getParent();
 		if (parent instanceof JViewport) {
 			Container grand = parent.getParent();
@@ -889,10 +912,10 @@ public class SubstanceTableUI extends BasicTableUI implements
 					cellRect.width = columnWidth - columnMargin;
 					highlightCellRect.x = cellRect.x - columnMargin / 2;
 					highlightCellRect.width = columnWidth;
-					if (!hasTrailingVerticalGridLine(cm, column)) {
-						cellRect.width++;
-						highlightCellRect.width++;
-					}
+					//if (!hasTrailingVerticalGridLine(cm, column)) {
+					//	cellRect.width++;
+					//	highlightCellRect.width++;
+					//}
 
 					if (aColumn != draggedColumn) {
 						this.paintCell(g, cellRect, highlightCellRect, row,
@@ -1060,6 +1083,9 @@ public class SubstanceTableUI extends BasicTableUI implements
 		} else {
 			hasHighlights = (this.updateInfo.getHighlightAlpha(currState) > 0.0f);
 		}
+
+        Object highlightProperty = table.getClientProperty("substancelaf.highlightCells");
+        hasHighlights = (highlightProperty instanceof Boolean) ? (Boolean)highlightProperty && hasHighlights : hasHighlights;
 
 		Set<SubstanceConstants.Side> highlightOpenSides = null;
 		float highlightBorderAlpha = 0.0f;
@@ -1939,7 +1965,8 @@ public class SubstanceTableUI extends BasicTableUI implements
 			// or hidden, we will get a mouseExited() event, but shouldn't
 			// be changing the rollover indication if the mouse is still
 			// over the table
-			Point mouseLoc = MouseInfo.getPointerInfo().getLocation();
+            PointerInfo pi = MouseInfo.getPointerInfo(); 
+			Point mouseLoc = pi == null ?  null : pi.getLocation();
             Window windowAncestor = SwingUtilities.getWindowAncestor(table);
             if ((mouseLoc != null) && (windowAncestor != null)) {
                 SwingUtilities.convertPointFromScreen(mouseLoc, windowAncestor);

@@ -75,21 +75,21 @@ public class SubstanceComboBoxUI extends BasicComboBoxUI implements
 	/**
 	 * Surrogate button model for tracking the state transitions.
 	 */
-	private ButtonModel transitionModel;
+	protected ButtonModel transitionModel;
 
 	/**
 	 * Listener for transition animations.
 	 */
-	private RolloverTextControlListener substanceRolloverListener;
+    protected RolloverTextControlListener substanceRolloverListener;
 
 	/**
 	 * Painting delegate.
 	 */
-	private ComboBoxBackgroundDelegate delegate;
+    protected ComboBoxBackgroundDelegate delegate;
 
-	private Icon uneditableArrowIcon;
+    protected Icon uneditableArrowIcon;
 
-	private Insets layoutInsets;
+    protected Insets layoutInsets;
 
 	/*
 	 * (non-Javadoc)

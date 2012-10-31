@@ -422,6 +422,10 @@ public class BasicRichTooltipPanelUI extends RichTooltipPanelUI {
 			// The description text
 			int descLabelWidth = ltr ? parent.getWidth() - x - ins.right : x
 					- ins.left;
+            // enforce a minimal 200 pixel width
+            if (descLabelWidth < 200) {
+                descLabelWidth = 200;
+            }
 			for (String descText : tooltipInfo.getDescriptionSections()) {
 				AttributedString attributedDescription = new AttributedString(
 						descText);

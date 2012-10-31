@@ -29,8 +29,6 @@
  */
 package org.pushingpixels.lafwidget.utils;
 
-import org.eclipse.swt.graphics.Device;
-
 import java.awt.*;
 import java.awt.print.PrinterGraphics;
 import java.util.*;

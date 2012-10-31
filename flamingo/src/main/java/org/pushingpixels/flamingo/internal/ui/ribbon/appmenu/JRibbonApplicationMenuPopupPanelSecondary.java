@@ -73,6 +73,8 @@ public class JRibbonApplicationMenuPopupPanelSecondary extends
 				commandButton.setPopupCallback(menuEntry.getPopupCallback());
 				commandButton.setActionKeyTip(menuEntry.getActionKeyTip());
 				commandButton.setPopupKeyTip(menuEntry.getPopupKeyTip());
+				commandButton.setActionRichTooltip(menuEntry.getActionRichTooltip());
+				commandButton.setPopupRichTooltip(menuEntry.getPopupRichTooltip());
 				if (menuEntry.getDisabledIcon() != null) {
 					commandButton.setDisabledIcon(menuEntry.getDisabledIcon());
 				}

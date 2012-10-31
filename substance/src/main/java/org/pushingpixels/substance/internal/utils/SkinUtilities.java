@@ -565,10 +565,18 @@ public class SkinUtilities {
 				selectionTextForegroundColor,
 
 				"InternalFrame.activeTitleBackground",
-				selectionTextForegroundColor,
+                new ColorUIResource(skin.getBackgroundColorScheme(DecorationAreaType.PRIMARY_TITLE_PANE).getBackgroundFillColor()),
+
+                "InternalFrame.activeTitleForeground",
+                SubstanceColorUtilities.getForegroundColor(skin.getBackgroundColorScheme(
+                                DecorationAreaType.PRIMARY_TITLE_PANE)),
 
 				"InternalFrame.inactiveTitleBackground",
-				foregroundColor,
+				new ColorUIResource(skin.getBackgroundColorScheme(DecorationAreaType.PRIMARY_TITLE_PANE_INACTIVE).getBackgroundFillColor()),
+
+				"InternalFrame.inactiveTitleForeground",
+				SubstanceColorUtilities.getForegroundColor(skin.getBackgroundColorScheme(
+								DecorationAreaType.PRIMARY_TITLE_PANE_INACTIVE)),
 
 				"InternalFrame.border",
 				new BorderUIResource(new SubstancePaneBorder()),

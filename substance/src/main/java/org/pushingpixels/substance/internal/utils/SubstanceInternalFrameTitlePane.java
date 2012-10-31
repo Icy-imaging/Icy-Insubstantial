@@ -350,17 +350,19 @@ public class SubstanceInternalFrameTitlePane extends
 		int rightEnd;
 
 		if (leftToRight) {
-			xOffset = 5;
-			Icon icon = this.frame.getFrameIcon();
-			if (icon != null) {
-				xOffset += icon.getIconWidth() + 5;
-			}
+			xOffset = 12;
+			
+//            xOffset = 5;
+//			Icon icon = this.frame.getFrameIcon();
+//			if (icon != null) {
+//				xOffset += icon.getIconWidth() + 5;
+//			}
 
 			leftEnd = (this.menuBar == null) ? 0
 					: (this.menuBar.getWidth() + 5);
 			xOffset += leftEnd;
-			if (icon != null)
-				leftEnd += (icon.getIconWidth() + 5);
+//			if (icon != null)
+//				leftEnd += (icon.getIconWidth() + 5);
 
             rightEnd = width - 5;
 
@@ -962,8 +964,20 @@ public class SubstanceInternalFrameTitlePane extends
 		}
 	}
 	   
-    public JMenuBar getMenuBar() {
-        return this.menuBar;
+
+    public JMenu getSystemMenu() {
+        return this.windowMenu;
+    }
+    
+    public void setSystemMenu(JMenu menu)
+    {
+        if ((this.menuBar != null) && (this.menuBar.getMenuCount() > 0)) {
+            SubstanceCoreUtilities.uninstallMenu(this.menuBar.getMenu(0));
+        }
+
+        this.menuBar.removeAll();
+        this.windowMenu = menu;
+        this.menuBar.add(windowMenu);
     }
 
 	public AbstractButton getCloseButton() {

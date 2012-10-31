@@ -600,7 +600,10 @@ public class SubstanceCoreUtilities {
         
         // check for maximized windows
         if (round) {
-            Component p = c.getParent();
+            Component p = c;
+            while (!(p instanceof Window || p instanceof JInternalFrame) && p != null) {
+                p = p.getParent();
+            }
             if (p instanceof Frame) {
                 if ((((Frame)p).getExtendedState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH) {
                     round = false;
@@ -772,12 +775,17 @@ public class SubstanceCoreUtilities {
 			}
 		}
 
+        BufferedImage compatibleImage;
+        if (GraphicsEnvironment.isHeadless()) {
+             compatibleImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        } else {
 		GraphicsEnvironment e = GraphicsEnvironment
 				.getLocalGraphicsEnvironment();
 		GraphicsDevice d = e.getDefaultScreenDevice();
 		GraphicsConfiguration c = d.getDefaultConfiguration();
-		BufferedImage compatibleImage = c.createCompatibleImage(width, height,
+            compatibleImage = c.createCompatibleImage(width, height,
 				Transparency.TRANSLUCENT);
+        }
 		return compatibleImage;
 	}
 

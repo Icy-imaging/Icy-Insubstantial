@@ -1162,10 +1162,7 @@ public class SubstanceTreeUI extends BasicTreeUI {
 	public Rectangle getPathBounds(JTree tree, TreePath path) {
 		Rectangle result = super.getPathBounds(tree, path);
 		if (result != null) {
-			if (tree.getComponentOrientation().isLeftToRight()) {
-				result.width = tree.getWidth() - tree.getInsets().right
-						- result.x;
-			} else {
+			if (!tree.getComponentOrientation().isLeftToRight()) {
 				int delta = result.x - tree.getInsets().left;
 				result.x -= delta;
 				result.width += delta;
