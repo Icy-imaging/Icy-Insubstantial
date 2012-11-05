@@ -23,8 +23,8 @@ dependencies {
   compile project(path: ":trident")
   compile project(path: ":laf-widget", transitive: false)
   compile project(path: ":laf-plugin", transitive: false)
-//  testCompile group: 'com.jgoodies', name: 'forms', version: '1.2.0'
-//  testCompile group: 'org.swinglabs.swingx', name: 'swingx-core', version: '1.6.3'
+  testCompile group: 'com.jgoodies', name: 'forms', version: '1.2.0'
+  testCompile group: 'org.swinglabs.swingx', name: 'swingx-core', version: '1.6.3'
   toolsCompile group: 'org.easytesting', name: 'fest-swing', version: '1.2.1'
   toolsCompile group: 'asm', name: 'asm-all', version: '2.2.3'
 }
