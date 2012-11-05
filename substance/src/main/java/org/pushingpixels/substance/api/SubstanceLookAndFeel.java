@@ -39,33 +39,12 @@ import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.TreeMap;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JPasswordField;
-import javax.swing.JRootPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.LookAndFeel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 import javax.swing.plaf.IconUIResource;
 import javax.swing.plaf.UIResource;
 import javax.swing.plaf.basic.BasicLookAndFeel;
@@ -1575,6 +1554,99 @@ public abstract class SubstanceLookAndFeel extends BasicLookAndFeel {
 		table.putDefaults(uiDefaults);
 	}
 
+    //from MetalLookAndFeel
+    static class AATextListener extends WeakReference<LookAndFeel> implements PropertyChangeListener {
+
+        private String key = AASupport.DESKTOPFONTHINTS;
+
+        AATextListener(LookAndFeel laf) {
+            super(laf, queue);
+            Toolkit tk = Toolkit.getDefaultToolkit();
+            tk.addPropertyChangeListener(key, this);
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent pce) {
+            LookAndFeel laf = get();
+            if (laf == null || laf != UIManager.getLookAndFeel()) {
+                dispose();
+                return;
+            }
+            UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+            Object aaTextInfo = AASupport.getAATextInfo(true);
+            defaults.put(AASupport.AA_TEXT_PROPERTY_KEY, aaTextInfo);
+            updateUI();
+        }
+
+        void dispose() {
+            Toolkit tk = Toolkit.getDefaultToolkit();
+            tk.removePropertyChangeListener(key, this);
+        }
+
+        /**
+         * Updates the UI of the passed in window and all its children.
+         */
+        private static void updateWindowUI(Window window) {
+            SwingUtilities.updateComponentTreeUI(window);
+            Window ownedWins[] = window.getOwnedWindows();
+            for (int i = 0; i < ownedWins.length; i++) {
+                updateWindowUI(ownedWins[i]);
+            }
+        }
+
+        /**
+         * Updates the UIs of all the known Frames.
+         */
+        private static void updateAllUIs() {
+            Frame appFrames[] = Frame.getFrames();
+            for (int j = 0; j < appFrames.length; j++) {
+                updateWindowUI(appFrames[j]);
+            }
+        }
+
+        /**
+         * Indicates if an updateUI call is pending.
+         */
+        private static boolean updatePending;
+
+        /**
+         * Sets whether or not an updateUI call is pending.
+         */
+        private static synchronized void setUpdatePending(boolean update) {
+            updatePending = update;
+        }
+
+        /**
+         * Returns true if a UI update is pending.
+         */
+        private static synchronized boolean isUpdatePending() {
+            return updatePending;
+        }
+        
+        protected void updateUI() {
+            if (!isUpdatePending()) {
+                setUpdatePending(true);
+                Runnable uiUpdater = new Runnable() {
+                        @Override
+                        public void run() {
+                            updateAllUIs();
+                            setUpdatePending(false);
+                        }
+                    };
+                SwingUtilities.invokeLater(uiUpdater);
+            }
+        }
+    }
+    
+    static ReferenceQueue<LookAndFeel> queue = new ReferenceQueue<LookAndFeel>();
+    
+    static void flushUnreferenced() {
+        AATextListener aatl;
+        while ((aatl = (AATextListener)queue.poll()) != null) {
+            aatl.dispose();
+        }
+    }
+    
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -1585,6 +1657,18 @@ public abstract class SubstanceLookAndFeel extends BasicLookAndFeel {
 	@Override
 	protected void initComponentDefaults(UIDefaults table) {
 		super.initComponentDefaults(table);
+
+        flushUnreferenced(); // Remove old listeners
+
+        /*
+         * Put the desktop AA settings in the defaults. JComponent.setUI() retrieves this and makes
+         * it available as a client property on the JComponent. Use the same key name for both
+         * client property and UIDefaults. Also need to set up listeners for changes in these
+         * settings.
+         */
+        Object aaTextInfo = AASupport.getAATextInfo(true);
+        table.put(AASupport.AA_TEXT_PROPERTY_KEY, aaTextInfo);
+        new AATextListener(this);
 
 		initFontDefaults(table);
 		this.skin.addCustomEntriesToTable(table);
