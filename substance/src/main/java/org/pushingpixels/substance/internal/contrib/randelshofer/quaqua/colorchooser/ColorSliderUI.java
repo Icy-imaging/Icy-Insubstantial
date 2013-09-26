@@ -384,12 +384,19 @@ public class ColorSliderUI extends BasicSliderUI implements TransitionAwareUI {
         }
 
 
+        float[] rgbRatios;
+        if (slider.getOrientation() == JSlider.HORIZONTAL) {
+          rgbRatios = new float[] {0.0f, 1.0f};
+        } else {
+          rgbRatios = new float[] {1.0f, 0.0f};
+        }
         Graphics2D gg = (Graphics2D) g.create();
         gg.setPaint(new LinearGradientPaint(x, y, x2, y2,
                 new float[] {0f, 1.0f},
-                new Color[] { new Color(colorSliderModel.getInterpolatedRGB(componentIndex, 0.0f), true),
-                              new Color(colorSliderModel.getInterpolatedRGB(componentIndex, 1.0f))}));
+                new Color[] { new Color(colorSliderModel.getInterpolatedRGB(componentIndex, rgbRatios[0]), true),
+                              new Color(colorSliderModel.getInterpolatedRGB(componentIndex, rgbRatios[1]))}));
         gg.fillRect(x, y, width, height);
+        gg.dispose();
 	}
 
 	@Override

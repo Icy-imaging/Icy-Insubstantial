@@ -178,7 +178,7 @@ public class TridentConfig {
             cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
                 @Override
                 public ClassLoader run() {
-                    return getClass().getClassLoader();
+                    return TridentConfig.class.getClassLoader();
                 }
             });
         } catch (SecurityException ignore) { }
