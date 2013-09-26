@@ -41,16 +41,16 @@ task augmentation(dependsOn: classes) {
 
     // Delegate augmentation
     ant.'delegate-update-augment'(verbose: verboseAugmentation, pattern: ".*UI\u002Eclass") {
-      sourceSets.main.output.addToAntBuilder(ant, 'classpathset', FileCollection.AntType.FileSet)
+      classpathset(dir: sourceSets.main.output.classesDir)
     }
 
     ant.'delegate-augment'(verbose: verboseAugmentation, pattern: ".*UI\u002Eclass") {
-      sourceSets.main.output.addToAntBuilder(ant, 'classpathset', FileCollection.AntType.FileSet)
+      classpathset(dir: sourceSets.main.output.classesDir)
     }
 
     // Container ghosting augmentation
     ant.'container-ghosting-augment'(verbose: verboseAugmentation) {
-      sourceSets.main.output.addToAntBuilder(ant, 'classpathset', FileCollection.AntType.FileSet)
+      classpathset(dir: sourceSets.main.output.classesDir)
       containerghosting(className: "org.pushingpixels.substance.flamingo.ribbon.ui.SubstanceRibbonGalleryUI", toInjectAfterOriginal: "true")
       containerghosting(className: "org.pushingpixels.substance.flamingo.ribbon.ui.SubstanceRibbonButtonUI", toInjectAfterOriginal: "true")
     }

@@ -31,6 +31,8 @@ package org.pushingpixels.trident;
 
 import java.io.*;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.*;
 
 import org.pushingpixels.trident.TimelineEngine.TridentAnimationThread;
@@ -79,8 +81,7 @@ public class TridentConfig {
 
 		this.uiToolkitHandlers = new HashSet<UIToolkitHandler>();
 		this.propertyInterpolators = new HashSet<PropertyInterpolator>();
-		ClassLoader classLoader = Thread.currentThread()
-				.getContextClassLoader();
+		ClassLoader classLoader = getClassLoader();
 		try {
 			Enumeration urls = classLoader
 					.getResources("META-INF/trident-plugin.properties");
@@ -169,6 +170,45 @@ public class TridentConfig {
 			exc.printStackTrace();
 		}
 	}
+
+    private static ClassLoader getClassLoader() {
+        ClassLoader cl = null;
+
+        try {
+            cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                @Override
+                public ClassLoader run() {
+                    return getClass().getClassLoader();
+                }
+            });
+        } catch (SecurityException ignore) { }
+
+        if (cl == null) {
+            final Thread t = Thread.currentThread();
+
+            try {
+                cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                    @Override
+                    public ClassLoader run() {
+                        return t.getContextClassLoader();
+                    }
+                });
+            } catch (SecurityException ignore) { }
+        }
+
+        if (cl == null) {
+            try {
+                cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                    @Override
+                    public ClassLoader run() {
+                        return ClassLoader.getSystemClassLoader();
+                    }
+                });
+            } catch (SecurityException ignore) { }
+        }
+
+        return cl;
+    }
 
 	public static synchronized TridentConfig getInstance() {
 		if (config == null)
