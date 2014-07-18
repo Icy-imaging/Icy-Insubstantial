@@ -168,7 +168,8 @@ public class SubstanceRibbonUI extends BasicRibbonUI {
                 0, taskToggleButtonsScrollablePanel.getY(),
                 ribbon.getWidth(), taskToggleButtonsScrollablePanel.getHeight()
             );
-            ribbon.setComponentZOrder(tabPanelHeaderBackground, ribbon.getComponentCount() - 1);
+            if (tabPanelHeaderBackground.getParent() != null)
+                ribbon.setComponentZOrder(tabPanelHeaderBackground, ribbon.getComponentCount() - 1);
         }
     }
 
