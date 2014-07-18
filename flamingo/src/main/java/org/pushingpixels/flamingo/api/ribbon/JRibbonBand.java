@@ -200,7 +200,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 	public void addCommandButton(AbstractCommandButton commandButton,
 			RibbonElementPriority priority) {
 		commandButton.setHorizontalAlignment(SwingConstants.LEFT);
-		this.controlPanel.addCommandButton(commandButton, priority);
+		getControlPanel().addCommandButton(commandButton, priority);
 	}
 	
 	/**
@@ -210,7 +210,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
      *            the command button to remove
      */
     public void removeCommandButton(AbstractCommandButton commandButton) {
-        this.controlPanel.removeCommandButton(commandButton);
+        getControlPanel().removeCommandButton(commandButton);
     }
 
 	public void addRibbonGallery(String galleryName,
@@ -266,7 +266,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 		gallery.setPreferredPopupPanelDimension(preferredPopupMaxButtonColumns,
 				preferredPopupMaxVisibleButtonRows);
 
-//		this.controlPanel.addRibbonGallery(gallery, priority);
+//		getControlPanel().addRibbonGallery(gallery, priority);
 		addRibbonGallery(gallery, priority);
 	}
 	
@@ -287,7 +287,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 	 */
 	public void addRibbonGalleryButtons(String galleryName,
 			String buttonGroupName, JCommandToggleButton... buttons) {
-		JRibbonGallery gallery = this.controlPanel
+		JRibbonGallery gallery = getControlPanel()
 				.getRibbonGallery(galleryName);
 		if (gallery == null)
 			return;
@@ -302,7 +302,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 	 *            the ribbon gallery
 	 */
 	public void addRibbonGallery(JRibbonGallery gallery) {
-		controlPanel.addRibbonGallery(gallery, RibbonElementPriority.TOP);
+	    getControlPanel().addRibbonGallery(gallery, RibbonElementPriority.TOP);
 	}
 
 	/**
@@ -316,7 +316,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 	 */
 	public void addRibbonGallery(JRibbonGallery gallery,
 			RibbonElementPriority priority) {
-		controlPanel.addRibbonGallery(gallery, priority);
+	    getControlPanel().addRibbonGallery(gallery, priority);
 	}
 
     /**
@@ -326,7 +326,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
      *            the ribbon gallery to remove
      */
     public void removeRibbonGallery(JRibbonGallery gallery) {
-        this.controlPanel.removeRibbonGallery(gallery);
+        getControlPanel().removeRibbonGallery(gallery);
     }
 
     /**
@@ -336,7 +336,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
      *            name of the ribbon gallery to remove
      */
     public void removeRibbonGallery(String galleryName) {
-        this.controlPanel.removeRibbonGallery(this.controlPanel.getRibbonGallery(galleryName));
+        getControlPanel().removeRibbonGallery(getControlPanel().getRibbonGallery(galleryName));
     }
 
 	/**
@@ -353,7 +353,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 	 */
 	public void removeRibbonGalleryButtons(String galleryName,
 			JCommandToggleButton... buttons) {
-		JRibbonGallery gallery = this.controlPanel
+		JRibbonGallery gallery = getControlPanel()
 				.getRibbonGallery(galleryName);
 		if (gallery == null)
 			return;
@@ -375,7 +375,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 	 */
 	public void setSelectedRibbonGalleryButton(String galleryName,
 			JCommandToggleButton buttonToSelect) {
-		JRibbonGallery gallery = this.controlPanel
+		JRibbonGallery gallery = getControlPanel()
 				.getRibbonGallery(galleryName);
 		if (gallery == null)
 			return;
@@ -392,7 +392,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 	 */
 	public void setRibbonGalleryButtonDisplayState(String galleryName,
 			CommandButtonDisplayState displayState) {
-		JRibbonGallery gallery = this.controlPanel
+		JRibbonGallery gallery = getControlPanel()
 				.getRibbonGallery(galleryName);
 		if (gallery == null)
 			return;
@@ -411,7 +411,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 	 */
 	public void setRibbonGalleryPopupCallback(String galleryName,
 			RibbonGalleryPopupCallback popupCallback) {
-		JRibbonGallery gallery = this.controlPanel
+		JRibbonGallery gallery = getControlPanel()
 				.getRibbonGallery(galleryName);
 		if (gallery == null)
 			return;
@@ -429,7 +429,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 	 */
 	public void setRibbonGalleryExpandKeyTip(String galleryName,
 			String expandKeyTip) {
-		JRibbonGallery gallery = this.controlPanel
+		JRibbonGallery gallery = getControlPanel()
 				.getRibbonGallery(galleryName);
 		if (gallery == null)
 			return;
@@ -443,7 +443,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 	 *            The ribbon component to add.
 	 */
 	public void addRibbonComponent(JRibbonComponent comp) {
-		this.controlPanel.addRibbonComponent(comp);
+		getControlPanel().addRibbonComponent(comp);
 	}
 
 	/**
@@ -460,8 +460,8 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 	 * @see #startGroup(String)
 	 */
 	public void addRibbonComponent(JRibbonComponent comp, int rowSpan) {
-		int groupCount = this.controlPanel.getControlPanelGroupCount();
-		String groupTitle = (groupCount > 0) ? this.controlPanel
+		int groupCount = getControlPanel().getControlPanelGroupCount();
+        String groupTitle = (groupCount > 0) ? getControlPanel()
 				.getControlPanelGroupTitle(groupCount - 1) : null;
 		int availableRows = (groupTitle == null) ? 3 : 2;
 		if ((rowSpan <= 0) || (rowSpan > availableRows)) {
@@ -469,7 +469,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 					"Row span value not supported. Should be in 1.."
 							+ availableRows + " range");
 		}
-		this.controlPanel.addRibbonComponent(comp, rowSpan);
+		getControlPanel().addRibbonComponent(comp, rowSpan);
 	}
 
     /**
@@ -479,7 +479,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
      *            The ribbon component to remove.
      */
     public void removeRibbonComponent(JRibbonComponent comp) {
-        this.controlPanel.removeRibbonComponent(comp);
+        getControlPanel().removeRibbonComponent(comp);
     }
 
 	/**
@@ -488,7 +488,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 	 * @return The index of the new group.
 	 */
 	public int startGroup() {
-		return this.controlPanel.startGroup();
+		return getControlPanel().startGroup();
 	}
 
 	/**
@@ -499,7 +499,7 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 	 * @return The index of the new group.
 	 */
 	public int startGroup(String groupTitle) {
-		return this.controlPanel.startGroup(groupTitle);
+		return getControlPanel().startGroup(groupTitle);
 	}
 
 	/**
@@ -511,11 +511,11 @@ public class JRibbonBand extends AbstractRibbonBand<JBandControlPanel> {
 	 *            The new title for this group.
 	 */
 	public void setGroupTitle(int groupIndex, String groupTitle) {
-		this.controlPanel.setGroupTitle(groupIndex, groupTitle);
+		getControlPanel().setGroupTitle(groupIndex, groupTitle);
 	}
 
 	public List<JRibbonComponent> getRibbonComponents(int groupIndex) {
-		return this.controlPanel.getRibbonComponents(groupIndex);
+		return getControlPanel().getRibbonComponents(groupIndex);
 	}
 
 	/*

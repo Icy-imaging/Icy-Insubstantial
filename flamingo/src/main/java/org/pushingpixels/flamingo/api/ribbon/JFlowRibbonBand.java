@@ -82,7 +82,7 @@ public class JFlowRibbonBand extends AbstractRibbonBand<JFlowBandControlPanel> {
 	 *            Component to add.
 	 */
 	public void addFlowComponent(JComponent comp) {
-		this.controlPanel.addFlowComponent(comp);
+	    getControlPanel().addFlowComponent(comp);
 	}
 
 	/*
