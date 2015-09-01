@@ -22,8 +22,11 @@ import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.tree.TreeCellRenderer;
 
 import org.jdesktop.swingx.JXPanel;
+import org.jdesktop.swingx.JXTree;
+import org.jdesktop.swingx.JXTree.DelegatingRenderer;
 import org.pushingpixels.substance.internal.utils.SubstanceCoreUtilities;
 
 /**
@@ -57,5 +60,24 @@ public class SubstanceTableUI extends
 		// + "]");
 		this.table.setDefaultRenderer(clazz, renderer);
 	}
-
+	
+//    protected boolean isSubstanceDefaultRenderer(Object instance) {
+//        // swingx renderer ?
+//        if (instance.getClass().getName().equals("org.jdesktop.swingx.JXTreeTable$TreeTableCellRenderer"))
+//        {
+//            final JXTree tree = (JXTree) instance;
+//            final TreeCellRenderer renderer = tree.getCellRenderer();
+//            
+//            System.out.println(renderer);
+//            
+//            if (renderer instanceof DelegatingRenderer)
+//            {
+//                final TreeCellRenderer r = ((DelegatingRenderer)renderer).getDelegateRenderer();
+//                
+//                System.out.println(r);
+//            }
+//        }
+//        
+//        return super.isSubstanceDefaultRenderer(instance);
+//    }
 }
