@@ -356,24 +356,26 @@ public class SubstanceComboBoxUI extends BasicComboBoxUI implements
 		// && this.arrowButton instanceof SubstanceComboBoxButton) {
 		//
 		SubstanceDropDownButton button = (SubstanceDropDownButton) this.arrowButton;
-		Insets buttonInsets = button.getInsets();
-		Insets insets = this.comboBox.getInsets();
-
-		Dimension size = this.getDisplaySize();
-
-		size.width += insets.left + insets.right;
-		size.width += buttonInsets.left + buttonInsets.right;
-		size.width += button.getMinimumSize().getWidth();
-		size.height += insets.top + insets.bottom;
-		// } else if (this.comboBox.isEditable() && this.arrowButton != null
-		// && this.editor != null) {
-		// size = super.getMinimumSize(c);
-		// } else {
-		// size = super.getMinimumSize(c);
-		// }
-
-		this.cachedMinimumSize.setSize(size.width, size.height);
-		this.isMinimumSizeDirty = false;
+		if (button != null) {
+    		Insets buttonInsets = button.getInsets();
+    		Insets insets = this.comboBox.getInsets();
+    
+    		Dimension size = this.getDisplaySize();
+    
+    		size.width += insets.left + insets.right;
+    		size.width += buttonInsets.left + buttonInsets.right;
+    		size.width += button.getMinimumSize().getWidth();
+    		size.height += insets.top + insets.bottom;
+    		// } else if (this.comboBox.isEditable() && this.arrowButton != null
+    		// && this.editor != null) {
+    		// size = super.getMinimumSize(c);
+    		// } else {
+    		// size = super.getMinimumSize(c);
+    		// }
+    
+    		this.cachedMinimumSize.setSize(size.width, size.height);
+    		this.isMinimumSizeDirty = false;
+		}
 
 		return new Dimension(this.cachedMinimumSize);
 	}
