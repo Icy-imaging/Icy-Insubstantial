@@ -87,6 +87,9 @@ public class SubstanceProgressBarUI extends BasicProgressBarUI {
 			SubstanceCoreUtilities
 					.testComponentStateChangeThreadingViolation(progressBar);
 
+			// can happen when changing LAF style
+			if (progressBar == null) return;
+			
 			int currValue = progressBar.getValue();
 			int span = progressBar.getMaximum() - progressBar.getMinimum();
 
@@ -110,7 +113,8 @@ public class SubstanceProgressBarUI extends BasicProgressBarUI {
 						public void set(Object obj, String fieldName,
 								Integer value) {
 							displayedValue = value;
-							progressBar.repaint();
+			                if ((progressBar != null) && progressBar.isVisible())
+							    progressBar.repaint();
 						}
 					}));
 			displayTimeline.setEase(new Spline(0.4f));
