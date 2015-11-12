@@ -998,7 +998,7 @@ public final class SubstanceImageCreator {
 		if (checkMarkVisibility > 0.0) {
 			if (isCheckMarkFadingOut) {
 				graphics.setComposite(AlphaComposite.getInstance(
-						AlphaComposite.SRC_OVER, Math.max(1f, alpha * checkMarkVisibility)));
+						AlphaComposite.SRC_OVER, Math.min(1f, alpha * checkMarkVisibility)));
 				checkMarkVisibility = 1.0f;
 			}
 
@@ -1109,14 +1109,14 @@ public final class SubstanceImageCreator {
 				height);
 		Graphics2D graphics = (Graphics2D) result.getGraphics().create();
 		graphics.setComposite(AlphaComposite.getInstance(
-				AlphaComposite.SRC_OVER, Math.max(1f, 0.2f * echoAlpha * echoAlpha
+				AlphaComposite.SRC_OVER, Math.min(1f, 0.2f * echoAlpha * echoAlpha
 						* echoAlpha)));
 		graphics.drawImage(negated, offsetX - 1, offsetY - 1, null);
 		graphics.drawImage(negated, offsetX + 1, offsetY - 1, null);
 		graphics.drawImage(negated, offsetX - 1, offsetY + 1, null);
 		graphics.drawImage(negated, offsetX + 1, offsetY + 1, null);
 		graphics.setComposite(AlphaComposite.getInstance(
-				AlphaComposite.SRC_OVER, Math.max(1f, 0.7f * echoAlpha * echoAlpha
+				AlphaComposite.SRC_OVER, Math.min(1f, 0.7f * echoAlpha * echoAlpha
 						* echoAlpha)));
 		graphics.drawImage(negated, offsetX, offsetY - 1, null);
 		graphics.drawImage(negated, offsetX, offsetY + 1, null);

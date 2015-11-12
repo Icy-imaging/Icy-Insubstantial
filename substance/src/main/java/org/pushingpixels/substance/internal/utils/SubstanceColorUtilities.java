@@ -143,10 +143,16 @@ public class SubstanceColorUtilities {
 	 */
 	public static int getInterpolatedRGB(Color color1, Color color2,
 			double color1Likeness) {
-		if ((color1Likeness < 0.0) || (color1Likeness > 1.0))
-			throw new IllegalArgumentException(
-					"Color likeness should be in 0.0-1.0 range [is "
-							+ color1Likeness + "]");
+	    double factor;
+	    
+	    factor = Math.min(1d, color1Likeness);
+	    factor = Math.max(0, factor);
+	    
+//		if ((color1Likeness < 0.0) || (color1Likeness > 1.0))
+//			throw new IllegalArgumentException(
+//					"Color likeness should be in 0.0-1.0 range [is "
+//							+ color1Likeness + "]");
+	    
 		int lr = color1.getRed();
 		int lg = color1.getGreen();
 		int lb = color1.getBlue();
@@ -158,14 +164,14 @@ public class SubstanceColorUtilities {
 
 		// using some interpolation values (such as 0.29 from issue 401)
 		// results in an incorrect final value without Math.round.
-		int r = (lr == dr) ? lr : (int) Math.round(color1Likeness * lr
-				+ (1.0 - color1Likeness) * dr);
-		int g = (lg == dg) ? lg : (int) Math.round(color1Likeness * lg
-				+ (1.0 - color1Likeness) * dg);
-		int b = (lb == db) ? lb : (int) Math.round(color1Likeness * lb
-				+ (1.0 - color1Likeness) * db);
-		int a = (la == da) ? la : (int) Math.round(color1Likeness * la
-				+ (1.0 - color1Likeness) * da);
+		int r = (lr == dr) ? lr : (int) Math.round(factor * lr
+				+ (1.0 - factor) * dr);
+		int g = (lg == dg) ? lg : (int) Math.round(factor * lg
+				+ (1.0 - factor) * dg);
+		int b = (lb == db) ? lb : (int) Math.round(factor * lb
+				+ (1.0 - factor) * db);
+		int a = (la == da) ? la : (int) Math.round(factor * la
+				+ (1.0 - factor) * da);
 
 		return (a << 24) | (r << 16) | (g << 8) | b;
 	}
