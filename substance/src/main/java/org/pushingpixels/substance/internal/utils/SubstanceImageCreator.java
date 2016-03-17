@@ -850,7 +850,7 @@ public final class SubstanceImageCreator {
 		float alpha = SubstanceColorSchemeUtilities.getAlpha(component,
 				componentState);
 		graphics.setComposite(AlphaComposite.getInstance(
-				AlphaComposite.SRC_OVER, alpha));
+				AlphaComposite.SRC_OVER, Math.min(1f, alpha)));
 
 		graphics.translate(offsetX, 0);
 		fillPainter.paintContourBackground(graphics, component, dimension,
@@ -878,7 +878,7 @@ public final class SubstanceImageCreator {
 					2 * radius, 2 * radius);
 
 			graphics.setComposite(AlphaComposite.getInstance(
-					AlphaComposite.SRC_OVER, alpha * checkMarkVisibility));
+					AlphaComposite.SRC_OVER, Math.min(1f, alpha * checkMarkVisibility)));
 			drawRadioMark(graphics, SubstanceColorUtilities.getMarkColor(
 					markColorScheme, !componentState.isDisabled()), markOval);
 		} else {
@@ -889,7 +889,7 @@ public final class SubstanceImageCreator {
 			Shape markOval = new Ellipse2D.Double(rc - radius, rc - radius,
 					2 * radius, 2 * radius);
 			graphics.setComposite(AlphaComposite.getInstance(
-					AlphaComposite.SRC_OVER, alpha * 0.3f));
+					AlphaComposite.SRC_OVER, Math.min(1f, alpha * 0.3f)));
 			graphics.fill(markOval);
 		}
 		graphics.translate(-offsetX, 0);
@@ -980,7 +980,7 @@ public final class SubstanceImageCreator {
 		float alpha = SubstanceColorSchemeUtilities.getAlpha(button,
 				componentState);
 		graphics.setComposite(AlphaComposite.getInstance(
-				AlphaComposite.SRC_OVER, alpha));
+				AlphaComposite.SRC_OVER, Math.min(1f, alpha)));
 
 		graphics.translate(delta - 1, delta - 1);
 		fillPainter.paintContourBackground(graphics, button, contourDim,
