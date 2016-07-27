@@ -523,70 +523,73 @@ public class SubstanceComboBoxUI extends BasicComboBoxUI implements
 	@Override
 	public void paint(Graphics g, JComponent c) {
 		Graphics2D graphics = (Graphics2D) g.create();
-		int width = this.comboBox.getWidth();
-		int height = this.comboBox.getHeight();
-		Insets insets = this.comboBox.getInsets();
+		JComboBox combo = this.comboBox;
+		// dirty fix
+		if (combo == null) return;
+		
+		int width = combo.getWidth();
+		int height = combo.getHeight();
+		Insets insets = combo.getInsets();
 
 		int componentFontSize = SubstanceSizeUtils
-				.getComponentFontSize(this.comboBox);
-		if (this.comboBox.isEditable()) {
+				.getComponentFontSize(combo);
+		if (combo.isEditable()) {
 			int borderDelta = (int) Math.floor(SubstanceSizeUtils
 					.getBorderStrokeWidth(componentFontSize));
 			Shape contour = SubstanceOutlineUtilities
 					.getBaseOutline(
 							width,
 							height,
-							Math
-									.max(
-											0,
-											2.0f
-													* SubstanceSizeUtils
+							Math.max(0, 2.0f * SubstanceSizeUtils
 															.getClassicButtonCornerRadius(componentFontSize)
 													- borderDelta), null,
 							borderDelta);
 
 			graphics.setColor(SubstanceTextUtilities
-					.getTextBackgroundFillColor(this.comboBox));
+					.getTextBackgroundFillColor(combo));
 			graphics.fill(contour);
 		} else {
-			this.delegate.updateBackground(graphics, this.comboBox,
+			this.delegate.updateBackground(graphics, combo,
 					this.transitionModel);
 
 			Icon icon = this.uneditableArrowIcon;
-			int iw = icon.getIconWidth();
-			int ih = icon.getIconHeight();
-			int origButtonWidth = SubstanceSizeUtils
-					.getScrollBarWidth(componentFontSize);
-			if (this.comboBox.getComponentOrientation().isLeftToRight()) {
-				int iconX = width - origButtonWidth - insets.right / 2
-						+ (origButtonWidth - iw) / 2;
-				int iconY = insets.top
-						+ (height - insets.top - insets.bottom - ih) / 2;
-				icon.paintIcon(this.comboBox, graphics, iconX, iconY);
-			} else {
-				int iconX = insets.left / 2 + (origButtonWidth - iw) / 2;
-				int iconY = insets.top
-						+ (height - insets.top - insets.bottom - ih) / 2;
-				icon.paintIcon(this.comboBox, graphics, iconX, iconY);
+			if (icon != null)
+			{
+    			int iw = icon.getIconWidth();
+    			int ih = icon.getIconHeight();
+    			int origButtonWidth = SubstanceSizeUtils
+    					.getScrollBarWidth(componentFontSize);
+    			if (combo.getComponentOrientation().isLeftToRight()) {
+    				int iconX = width - origButtonWidth - insets.right / 2
+    						+ (origButtonWidth - iw) / 2;
+    				int iconY = insets.top
+    						+ (height - insets.top - insets.bottom - ih) / 2;
+    				icon.paintIcon(combo, graphics, iconX, iconY);
+    			} else {
+    				int iconX = insets.left / 2 + (origButtonWidth - iw) / 2;
+    				int iconY = insets.top
+    						+ (height - insets.top - insets.bottom - ih) / 2;
+    				icon.paintIcon(combo, graphics, iconX, iconY);
+    			}
 			}
 		}
 
-		hasFocus = comboBox.hasFocus();
-		if (!comboBox.isEditable()) {
+		hasFocus = combo.hasFocus();
+		if (!combo.isEditable()) {
 			Rectangle r = rectangleForCurrentValue();
 
-			ListCellRenderer renderer = this.comboBox.getRenderer();
+			ListCellRenderer renderer = combo.getRenderer();
 			Component rendererComponent;
 			if (hasFocus) {
 				rendererComponent = renderer.getListCellRendererComponent(
-						this.listBox, this.comboBox.getSelectedItem(), -1,
+						this.listBox, combo.getSelectedItem(), -1,
 						true, hasFocus);
 			} else {
 				rendererComponent = renderer.getListCellRendererComponent(
-						this.listBox, this.comboBox.getSelectedItem(), -1,
+						this.listBox, combo.getSelectedItem(), -1,
 						false, hasFocus);
 			}
-			rendererComponent.setFont(this.comboBox.getFont());
+			rendererComponent.setFont(combo.getFont());
 
 			// Fix for 4238829: should lay out the JPanel.
 			boolean shouldValidate = false;
@@ -596,18 +599,18 @@ public class SubstanceComboBoxUI extends BasicComboBoxUI implements
 
 			// SubstanceCoreUtilities.workaroundBug6576507(graphics);
 
-			if (this.comboBox.getComponentOrientation().isLeftToRight()) {
+			if (combo.getComponentOrientation().isLeftToRight()) {
 				this.currentValuePane.paintComponent(graphics,
-						rendererComponent, this.comboBox, r.x, r.y, r.width,
+						rendererComponent, combo, r.x, r.y, r.width,
 						r.height, shouldValidate);
 			} else {
 				this.currentValuePane.paintComponent(graphics,
-						rendererComponent, this.comboBox, r.x, r.y, r.width,
+						rendererComponent, combo, r.x, r.y, r.width,
 						r.height, shouldValidate);
 			}
 		}
 
-		if (!this.comboBox.isEditable()) {
+		if (!combo.isEditable()) {
 			Rectangle r = new Rectangle(insets.left, layoutInsets.top, width
 					- insets.left - insets.right, height - layoutInsets.top
 					- layoutInsets.bottom);
@@ -626,14 +629,18 @@ public class SubstanceComboBoxUI extends BasicComboBoxUI implements
 	 *            Bounds for text.
 	 */
 	protected void paintFocus(Graphics g, Rectangle bounds) {
-		int fontSize = SubstanceSizeUtils.getComponentFontSize(this.comboBox);
+        JComboBox combo = this.comboBox;
+        // dirty fix
+        if (combo == null) return;
+        
+		int fontSize = SubstanceSizeUtils.getComponentFontSize(combo);
 		int focusRingPadding = SubstanceSizeUtils.getFocusRingPadding(fontSize) / 2;
 		int x = bounds.x;
 		int y = bounds.y;
 		Graphics2D g2d = (Graphics2D) g.create();
 		g2d.translate(x, y);
 
-		SubstanceCoreUtilities.paintFocus(g2d, this.comboBox, this.comboBox,
+		SubstanceCoreUtilities.paintFocus(g2d, combo, combo,
 				this, SubstanceOutlineUtilities.getBaseOutline(bounds.width,
 						bounds.height, SubstanceSizeUtils
 								.getClassicButtonCornerRadius(fontSize), null,
