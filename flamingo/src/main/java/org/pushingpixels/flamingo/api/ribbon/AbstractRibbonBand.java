@@ -180,6 +180,16 @@ public abstract class AbstractRibbonBand<T extends AbstractBandControlPanel> ext
     private String collapsedStateKeyTip;
 
     /**
+     * Replacement of visible property which is already used for drawing, <i>hidden</i> can be use to hide a specific
+     * band from a RibbonTask.
+     * 
+     * @see #setHidden(boolean)
+     * @see #isHidden()
+     * @see #isVisible()
+     */
+    private boolean hidden;
+
+    /**
      * Creates a new ribbon band.
      * 
      * @param title
@@ -197,6 +207,7 @@ public abstract class AbstractRibbonBand<T extends AbstractBandControlPanel> ext
         this.title = title;
         this.icon = icon;
         this.expandActionListener = expandActionListener;
+        this.hidden = false;
 
         this.controlPanel = controlPanel;
         this.controlPanel.setRibbonBand(this);
@@ -567,6 +578,46 @@ public abstract class AbstractRibbonBand<T extends AbstractBandControlPanel> ext
         String old = this.collapsedStateKeyTip;
         this.collapsedStateKeyTip = collapsedStateKeyTip;
         this.firePropertyChange("collapsedStateKeyTip", old, this.collapsedStateKeyTip);
+    }
+
+    /**
+     * Use {@link #setHidden(boolean)} instead of {@link #setVisible(boolean)} to temporary hide a band from a ribbon
+     * task.
+     * 
+     * @param value
+     *        Set to <code>true</code> to hide this band from parent task.
+     * @see #isHidden()
+     */
+    public void setHidden(boolean value)
+    {
+        if (this.hidden != value)
+        {
+            this.hidden = value;
+            this.firePropertyChange("hidden", !this.hidden, this.hidden);
+            if (getParent() != null)
+                getParent().revalidate();
+        }
+    }
+
+    /**
+     * @return <i>hidden</i> state for the ribbon band.
+     * @see #setHidden(boolean)
+     */
+    public boolean isHidden()
+    {
+        return hidden;
+    }
+
+    @Override
+    public boolean isShowing()
+    {
+        return super.isShowing() && !isHidden();
+    }
+
+    @Override
+    public boolean isVisible()
+    {
+        return super.isVisible() && !isHidden();
     }
 
     /**

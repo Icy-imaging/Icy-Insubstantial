@@ -537,8 +537,8 @@ public class BasicRibbonUI extends RibbonUI
             int extraHeight = getTaskToggleButtonHeight();
             if (!this.isUsingTitlePane())
                 extraHeight += getTaskbarHeight();
-            this.paintTaskArea(g, 0, ins.top + extraHeight, c.getWidth(), c.getHeight() - extraHeight - ins.top
-                    - ins.bottom);
+            this.paintTaskArea(g, 0, ins.top + extraHeight, c.getWidth(),
+                    c.getHeight() - extraHeight - ins.top - ins.bottom);
         }
         else
         {
@@ -620,9 +620,9 @@ public class BasicRibbonUI extends RibbonUI
             int topY = ins.top + getTaskbarHeight();
             int bottomY = topY + 5;
             Color hueColor = contextualGroup.getHueColor();
-            Paint paint = new GradientPaint(0, topY, FlamingoUtilities.getAlphaColor(hueColor,
-                    (int) (255 * RibbonContextualTaskGroup.HUE_ALPHA)), 0, bottomY, FlamingoUtilities.getAlphaColor(
-                    hueColor, 0));
+            Paint paint = new GradientPaint(0, topY,
+                    FlamingoUtilities.getAlphaColor(hueColor, (int) (255 * RibbonContextualTaskGroup.HUE_ALPHA)), 0,
+                    bottomY, FlamingoUtilities.getAlphaColor(hueColor, 0));
             g2d.setPaint(paint);
             g2d.clip(outerContour);
             g2d.fillRect(0, topY, width, bottomY - topY + 1);
@@ -765,10 +765,14 @@ public class BasicRibbonUI extends RibbonUI
                     RibbonTask selectedTask = ribbon.getSelectedTask();
                     for (AbstractRibbonBand<?> ribbonBand : selectedTask.getBands())
                     {
+                        // only consider visible band (Stephane-D)
+                        if (ribbonBand.isHidden())
+                            continue;
+
                         int bandPrefHeight = ribbonBand.getPreferredSize().height;
                         Insets bandInsets = ribbonBand.getInsets();
-                        maxPrefBandHeight = Math.max(maxPrefBandHeight, bandPrefHeight + bandInsets.top
-                                + bandInsets.bottom);
+                        maxPrefBandHeight = Math.max(maxPrefBandHeight,
+                                bandPrefHeight + bandInsets.top + bandInsets.bottom);
                     }
                 }
             }
@@ -807,18 +811,26 @@ public class BasicRibbonUI extends RibbonUI
                 RibbonTask selectedTask = ribbon.getSelectedTask();
                 for (AbstractRibbonBand ribbonBand : selectedTask.getBands())
                 {
+                    // only consider visible band (Stephane-D)
+                    if (ribbonBand.isHidden())
+                        continue;
+
                     int bandPrefHeight = ribbonBand.getMinimumSize().height;
                     Insets bandInsets = ribbonBand.getInsets();
                     RibbonBandUI bandUI = ribbonBand.getUI();
                     width += bandUI.getPreferredCollapsedWidth();
                     if (!isRibbonMinimized)
                     {
-                        maxMinBandHeight = Math.max(maxMinBandHeight, bandPrefHeight + bandInsets.top
-                                + bandInsets.bottom);
+                        maxMinBandHeight = Math.max(maxMinBandHeight,
+                                bandPrefHeight + bandInsets.top + bandInsets.bottom);
                     }
+
+                    // add inter-band gap
+                    width += gap;
                 }
-                // add inter-band gaps
-                width += gap * (selectedTask.getBandCount() - 1);
+
+                // remove last gap
+                width -= gap;
             }
             else
             {
@@ -914,14 +926,14 @@ public class BasicRibbonUI extends RibbonUI
             // task buttons
             if (ltr)
             {
-                int taskButtonsWidth = (helpPanel != null) ? (helpPanel.getX() - tabButtonGap - x) : (c.getWidth()
-                        - ins.right - x);
+                int taskButtonsWidth = (helpPanel != null) ? (helpPanel.getX() - tabButtonGap - x)
+                        : (c.getWidth() - ins.right - x);
                 taskToggleButtonsScrollablePanel.setBounds(x, y, taskButtonsWidth, taskToggleButtonHeight);
             }
             else
             {
-                int taskButtonsWidth = (helpPanel != null) ? (x - tabButtonGap - helpPanel.getX() - helpPanel
-                        .getWidth()) : (x - ins.left);
+                int taskButtonsWidth = (helpPanel != null)
+                        ? (x - tabButtonGap - helpPanel.getX() - helpPanel.getWidth()) : (x - ins.left);
                 taskToggleButtonsScrollablePanel.setBounds(x - taskButtonsWidth, y, taskButtonsWidth,
                         taskToggleButtonHeight);
             }
@@ -945,15 +957,15 @@ public class BasicRibbonUI extends RibbonUI
                     // y += ins.top;
                     Insets bandInsets = (ribbon.getSelectedTask().getBandCount() == 0) ? new Insets(0, 0, 0, 0)
                             : ribbon.getSelectedTask().getBand(0).getInsets();
-                    bandScrollablePanel.setBounds(1 + ins.left, y + bandInsets.top, c.getWidth() - 2 * ins.left - 2
-                            * ins.right - 1, c.getHeight() - extraHeight - ins.top - ins.bottom - bandInsets.top
-                            - bandInsets.bottom);
+                    bandScrollablePanel.setBounds(1 + ins.left, y + bandInsets.top,
+                            c.getWidth() - 2 * ins.left - 2 * ins.right - 1,
+                            c.getHeight() - extraHeight - ins.top - ins.bottom - bandInsets.top - bandInsets.bottom);
                     // System.out.println("Scrollable : "
                     // + bandScrollablePanel.getBounds());
                     BandHostPanel bandHostPanel = bandScrollablePanel.getView();
                     int bandHostPanelMinWidth = bandHostPanel.getMinimumSize().width;
-                    bandHostPanel.setPreferredSize(new Dimension(bandHostPanelMinWidth,
-                            bandScrollablePanel.getBounds().height));
+                    bandHostPanel.setPreferredSize(
+                            new Dimension(bandHostPanelMinWidth, bandScrollablePanel.getBounds().height));
                     bandScrollablePanel.doLayout();
                     bandHostPanel.doLayout();
                 }
@@ -1161,14 +1173,13 @@ public class BasicRibbonUI extends RibbonUI
 
                     Color hueColor = taskGroup.getHueColor();
                     Paint paint = new GradientPaint(0, 0, FlamingoUtilities.getAlphaColor(hueColor, 0), 0, height,
-                            FlamingoUtilities
-                                    .getAlphaColor(hueColor, (int) (255 * RibbonContextualTaskGroup.HUE_ALPHA)));
+                            FlamingoUtilities.getAlphaColor(hueColor,
+                                    (int) (255 * RibbonContextualTaskGroup.HUE_ALPHA)));
                     // translucent gradient paint
                     g2d.setPaint(paint);
                     int startX = ltr ? taskGroupBounds.x : Math.min(contourMinX, taskGroupBounds.x);
-                    int width = ltr ? taskGroupBounds.x + taskGroupBounds.width - startX : Math.min(taskGroupBounds.x
-                            + taskGroupBounds.width, contourMinX)
-                            - startX;
+                    int width = ltr ? taskGroupBounds.x + taskGroupBounds.width - startX
+                            : Math.min(taskGroupBounds.x + taskGroupBounds.width, contourMinX) - startX;
 
                     if (width > 0)
                     {
@@ -1207,8 +1218,8 @@ public class BasicRibbonUI extends RibbonUI
 
                         // separator lines
                         Color color = FlamingoUtilities.getBorderColor();
-                        g2d.setPaint(new GradientPaint(0, 0, FlamingoUtilities.getAlphaColor(color, 0), 0, height,
-                                color));
+                        g2d.setPaint(
+                                new GradientPaint(0, 0, FlamingoUtilities.getAlphaColor(color, 0), 0, height, color));
                         // left line
                         g2d.drawLine(startX, 0, startX, height);
                         // right line
@@ -1296,8 +1307,9 @@ public class BasicRibbonUI extends RibbonUI
                     if (applicationMenuButton.isVisible())
                     {
                         // left arc
-                        outline.append(new Arc2D.Double(minX - 1 - 2 * height, 0, 2 * height, 2 * height, 0, 90,
-                                Arc2D.OPEN), true);
+                        outline.append(
+                                new Arc2D.Double(minX - 1 - 2 * height, 0, 2 * height, 2 * height, 0, 90, Arc2D.OPEN),
+                                true);
                     }
                     else
                     {
@@ -1397,10 +1409,14 @@ public class BasicRibbonUI extends RibbonUI
                 RibbonTask selectedTask = ribbon.getSelectedTask();
                 for (AbstractRibbonBand<?> ribbonBand : selectedTask.getBands())
                 {
+                    // only consider visible band (Stephane-D)
+                    if (ribbonBand.isHidden())
+                        continue;
+
                     int bandPrefHeight = ribbonBand.getPreferredSize().height;
                     Insets bandInsets = ribbonBand.getInsets();
-                    maxPrefBandHeight = Math
-                            .max(maxPrefBandHeight, bandPrefHeight + bandInsets.top + bandInsets.bottom);
+                    maxPrefBandHeight = Math.max(maxPrefBandHeight,
+                            bandPrefHeight + bandInsets.top + bandInsets.bottom);
                 }
             }
 
@@ -1422,11 +1438,18 @@ public class BasicRibbonUI extends RibbonUI
             int maxMinBandHeight = 0;
             int gap = getBandGap();
 
+            // add first
+            width += gap;
+
             // minimum is when all the tasks are collapsed
             RibbonTask selectedTask = ribbon.getSelectedTask();
             // System.out.println(selectedTask.getTitle() + " min width");
             for (AbstractRibbonBand ribbonBand : selectedTask.getBands())
             {
+                // only consider visible band (Stephane-D)
+                if (ribbonBand.isHidden())
+                    continue;
+
                 int bandPrefHeight = ribbonBand.getMinimumSize().height;
                 Insets bandInsets = ribbonBand.getInsets();
                 RibbonBandUI bandUI = ribbonBand.getUI();
@@ -1436,10 +1459,10 @@ public class BasicRibbonUI extends RibbonUI
                 // preferredCollapsedWidth);
                 maxMinBandHeight = Math.max(maxMinBandHeight, bandPrefHeight
                 // + bandInsets.top + bandInsets.bottom
-                        );
+                );
+                // add inter-gap
+                width += gap;
             }
-            // add inter-band gaps
-            width += gap * (selectedTask.getBandCount() + 1);
             // System.out.println("\t" + gap + "*" +
             // (selectedTask.getBandCount() + 1));
 
@@ -1501,6 +1524,7 @@ public class BasicRibbonUI extends RibbonUI
                 RibbonBandResizeSequencingPolicy resizeSequencingPolicy = selectedTask.getResizeSequencingPolicy();
                 resizeSequencingPolicy.reset();
                 AbstractRibbonBand<?> currToTakeFrom = resizeSequencingPolicy.next();
+
                 while (true)
                 {
                     // check whether all bands have the current resize
@@ -1524,6 +1548,10 @@ public class BasicRibbonUI extends RibbonUI
                     // System.out.println("Iteration");
                     for (AbstractRibbonBand<?> ribbonBand : selectedTask.getBands())
                     {
+                        // only consider visible band (Stephane-D)
+                        if (ribbonBand.isHidden())
+                            continue;
+
                         RibbonBandResizePolicy currentResizePolicy = ribbonBand.getCurrentResizePolicy();
 
                         Insets ribbonBandInsets = ribbonBand.getInsets();
@@ -1539,6 +1567,7 @@ public class BasicRibbonUI extends RibbonUI
                         int preferredWidth = currentResizePolicy.getPreferredWidth(availableHeight, controlPanelGap)
                                 + ribbonBandInsets.left + ribbonBandInsets.right;
                         totalWidth += preferredWidth + bandGap;
+
                         // System.out.println("\t"
                         // + ribbonBand.getTitle()
                         // + ":"
@@ -1547,10 +1576,12 @@ public class BasicRibbonUI extends RibbonUI
                         // + " under " + availableHeight + " with "
                         // + controlPanel.getComponentCount()
                         // + " children");
+
+                        // System.out.println("\t:Total:" + totalWidth + "("
+                        // + availableWidth + ")");
+                        // System.out.println("\n");
                     }
-                    // System.out.println("\t:Total:" + totalWidth + "("
-                    // + availableWidth + ")");
-                    // System.out.println("\n");
+
                     if (totalWidth < availableWidth)
                         break;
 
@@ -1565,6 +1596,7 @@ public class BasicRibbonUI extends RibbonUI
                     {
                         currToTakeFrom.setCurrentResizePolicy(policies.get(currPolicyIndex + 1));
                     }
+
                     currToTakeFrom = resizeSequencingPolicy.next();
                 }
             }
@@ -1574,6 +1606,10 @@ public class BasicRibbonUI extends RibbonUI
             // System.out.println("Will get [" + availableWidth + "]:");
             for (AbstractRibbonBand<?> ribbonBand : selectedTask.getBands())
             {
+                // only consider visible band (Stephane-D)
+                if (ribbonBand.isHidden())
+                    continue;
+
                 Insets ribbonBandInsets = ribbonBand.getInsets();
                 RibbonBandResizePolicy currentResizePolicy = ribbonBand.getCurrentResizePolicy();
                 AbstractBandControlPanel controlPanel = ribbonBand.getControlPanel();
@@ -1621,7 +1657,6 @@ public class BasicRibbonUI extends RibbonUI
                 {
                     x -= (requiredBandWidth + bandGap);
                 }
-
             }
             // System.out.println();
         }
@@ -2002,8 +2037,8 @@ public class BasicRibbonUI extends RibbonUI
                                 int prefHeight = bandScrollablePanel.getView().getPreferredSize().height;
                                 Insets ins = ribbon.getInsets();
                                 prefHeight += ins.top + ins.bottom;
-                                AbstractRibbonBand band = (ribbon.getSelectedTask().getBandCount() > 0) ? ribbon
-                                        .getSelectedTask().getBand(0) : null;
+                                AbstractRibbonBand band = (ribbon.getSelectedTask().getBandCount() > 0)
+                                        ? ribbon.getSelectedTask().getBand(0) : null;
                                 if (band != null)
                                 {
                                     Insets bandIns = band.getInsets();
@@ -2015,8 +2050,8 @@ public class BasicRibbonUI extends RibbonUI
                                 // + bandScrollablePanel.getView()
                                 // .getComponentCount());
 
-                                JPopupPanel popupPanel = new BandHostPopupPanel(bandScrollablePanel, new Dimension(
-                                        ribbon.getWidth(), prefHeight));
+                                JPopupPanel popupPanel = new BandHostPopupPanel(bandScrollablePanel,
+                                        new Dimension(ribbon.getWidth(), prefHeight));
 
                                 int x = ribbon.getLocationOnScreen().x;
                                 int y = ribbon.getLocationOnScreen().y + ribbon.getHeight();
@@ -2068,8 +2103,8 @@ public class BasicRibbonUI extends RibbonUI
 
                                 // get the popup and show it
                                 popupPanel.setPreferredSize(new Dimension(pw, prefHeight));
-                                Popup popup = PopupFactory.getSharedInstance().getPopup(taskToggleButton, popupPanel,
-                                        x, y);
+                                Popup popup = PopupFactory.getSharedInstance().getPopup(taskToggleButton, popupPanel, x,
+                                        y);
                                 PopupPanelManager.PopupListener tracker = new PopupPanelManager.PopupListener()
                                 {
                                     @Override

@@ -36,15 +36,15 @@ subprojects {
     classifier = 'sources'
   }
 
-  task javadocJar(type: Jar) {
-    dependsOn javadoc
-    from javadoc.destinationDir
-    classifier = 'javadoc'
-  }
+//  task javadocJar(type: Jar) {
+//    dependsOn javadoc
+//    from javadoc.destinationDir
+//    classifier = 'javadoc'
+//  }
 
   artifacts {
     archives sourceJar
-    archives javadocJar
+//    archives javadocJar
   }
 
   uploadPublished {
