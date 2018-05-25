@@ -33,21 +33,18 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.KeyboardFocusManager;
-import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeMap;
@@ -2234,11 +2231,22 @@ public abstract class SubstanceLookAndFeel extends BasicLookAndFeel {
 						.processAllDefaultsEntries(lafDefaults, newSkin);
 			}
 
-			// file chooser strings go to the main UIManager table
-            for (ResourceBundle bundle : new ResourceBundle[] {
-                    ResourceBundle.getBundle("com.sun.swing.internal.plaf.metal.resources.metal"),
-                    SubstanceLookAndFeel.getLabelBundle()
-            }) {
+            // try to get metal bundle
+            ResourceBundle metalBundle;
+            
+            try {
+                // this may fail on Java 9 or above
+                metalBundle = ResourceBundle.getBundle("com.sun.swing.internal.plaf.metal.resources.metal");
+            } catch(MissingResourceException e) {
+                metalBundle = null;
+            }
+            
+            final ResourceBundle[] bundles;
+            if (metalBundle != null) bundles = new ResourceBundle[] {metalBundle, SubstanceLookAndFeel.getLabelBundle()};
+            else bundles = new ResourceBundle[] {SubstanceLookAndFeel.getLabelBundle()};
+
+            // file chooser strings go to the main UIManager table
+            for (ResourceBundle bundle : bundles) {
                 Enumeration<String> keyEn = bundle.getKeys();
                 while (keyEn.hasMoreElements()) {
                     String key = keyEn.nextElement();
