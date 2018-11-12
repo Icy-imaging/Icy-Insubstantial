@@ -9,3 +9,4 @@ www/webstart/*.jar
 .classpath
 .project
 .settings
+/bin/

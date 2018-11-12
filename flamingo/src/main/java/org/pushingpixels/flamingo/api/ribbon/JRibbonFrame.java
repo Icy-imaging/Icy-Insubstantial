@@ -130,15 +130,15 @@ public class JRibbonFrame extends JFrame {
 
 			// Support placing heavyweight components in the ribbon frame. See
 			// http://today.java.net/article/2009/11/02/transparent-panel-mixing-heavyweight-and-lightweight-components.
-			try {
-				Class awtUtilitiesClass = Class
-						.forName("com.sun.awt.AWTUtilities");
-				Method mSetComponentMixing = awtUtilitiesClass.getMethod(
-						"setComponentMixingCutoutShape", Component.class,
-						Shape.class);
-				mSetComponentMixing.invoke(null, this, new Rectangle());
-			} catch (Throwable ignored) {
-			}
+//			try {
+//				Class awtUtilitiesClass = Class
+//						.forName("com.sun.awt.AWTUtilities");
+//				Method mSetComponentMixing = awtUtilitiesClass.getMethod(
+//						"setComponentMixingCutoutShape", Component.class,
+//						Shape.class);
+//				mSetComponentMixing.invoke(null, this, new Rectangle());
+//			} catch (Throwable ignored) {
+//			}
 		}
 
 		@Override
@@ -159,84 +159,85 @@ public class JRibbonFrame extends JFrame {
 
 		@Override
 		protected void paintComponent(Graphics g) {
-			JRibbonFrame ribbonFrame = (JRibbonFrame) SwingUtilities
-					.getWindowAncestor(this);
-			if (!ribbonFrame.isShowingKeyTips())
-				return;
-
-			// don't show keytips on inactive windows
-			if (!ribbonFrame.isActive())
-				return;
-
-			Collection<KeyTipManager.KeyTipLink> keyTips = KeyTipManager
-					.defaultManager().getCurrentlyShownKeyTips();
-			if (keyTips != null) {
-				Graphics2D g2d = (Graphics2D) g.create();
-				RenderingUtils.installDesktopHints(g2d);
-
-				for (KeyTipManager.KeyTipLink keyTip : keyTips) {
-					// don't display keytips on components in popup panels
-					if (SwingUtilities.getAncestorOfClass(JPopupPanel.class,
-							keyTip.comp) != null)
-						continue;
-
-					// don't display key tips on hidden components
-					Rectangle compBounds = keyTip.comp.getBounds();
-					if (!keyTip.comp.isShowing()
-							|| (compBounds.getWidth() == 0)
-							|| (compBounds.getHeight() == 0))
-						continue;
-
-					Dimension pref = KeyTipRenderingUtilities.getPrefSize(g2d
-							.getFontMetrics(), keyTip.keyTipString);
-
-					Point prefCenter = keyTip.prefAnchorPoint;
-					Point loc = SwingUtilities.convertPoint(keyTip.comp,
-							prefCenter, this);
-					Container bandControlPanel = SwingUtilities
-							.getAncestorOfClass(AbstractBandControlPanel.class,
-									keyTip.comp);
-					if (bandControlPanel != null) {
-						// special case for controls in threesome
-						// ribbon band rows
-						if (hasClientPropertySetToTrue(keyTip.comp,
-								BasicBandControlPanelUI.TOP_ROW)) {
-							loc = SwingUtilities.convertPoint(keyTip.comp,
-									prefCenter, bandControlPanel);
-							loc.y = 0;
-							loc = SwingUtilities.convertPoint(bandControlPanel,
-									loc, this);
-							// prefCenter.y = 0;
-						}
-						if (hasClientPropertySetToTrue(keyTip.comp,
-								BasicBandControlPanelUI.MID_ROW)) {
-							loc = SwingUtilities.convertPoint(keyTip.comp,
-									prefCenter, bandControlPanel);
-							loc.y = bandControlPanel.getHeight() / 2;
-							loc = SwingUtilities.convertPoint(bandControlPanel,
-									loc, this);
-							// prefCenter.y = keyTip.comp.getHeight() / 2;
-						}
-						if (hasClientPropertySetToTrue(keyTip.comp,
-								BasicBandControlPanelUI.BOTTOM_ROW)) {
-							loc = SwingUtilities.convertPoint(keyTip.comp,
-									prefCenter, bandControlPanel);
-							loc.y = bandControlPanel.getHeight();
-							loc = SwingUtilities.convertPoint(bandControlPanel,
-									loc, this);
-							// prefCenter.y = keyTip.comp.getHeight();
-						}
-					}
-
-					KeyTipRenderingUtilities
-							.renderKeyTip(g2d, this, new Rectangle(loc.x
-									- pref.width / 2, loc.y - pref.height / 2,
-									pref.width, pref.height),
-									keyTip.keyTipString, keyTip.enabled);
-				}
-
-				g2d.dispose();
-			}
+		    //FIXME: disable key tip display (Stephane.D)
+//			JRibbonFrame ribbonFrame = (JRibbonFrame) SwingUtilities
+//					.getWindowAncestor(this);
+//			if (!ribbonFrame.isShowingKeyTips())
+//				return;
+//
+//			// don't show keytips on inactive windows
+//			if (!ribbonFrame.isActive())
+//				return;
+//
+//			Collection<KeyTipManager.KeyTipLink> keyTips = KeyTipManager
+//					.defaultManager().getCurrentlyShownKeyTips();
+//			if (keyTips != null) {
+//				Graphics2D g2d = (Graphics2D) g.create();
+//				RenderingUtils.installDesktopHints(g2d);
+//
+//				for (KeyTipManager.KeyTipLink keyTip : keyTips) {
+//					// don't display keytips on components in popup panels
+//					if (SwingUtilities.getAncestorOfClass(JPopupPanel.class,
+//							keyTip.comp) != null)
+//						continue;
+//
+//					// don't display key tips on hidden components
+//					Rectangle compBounds = keyTip.comp.getBounds();
+//					if (!keyTip.comp.isShowing()
+//							|| (compBounds.getWidth() == 0)
+//							|| (compBounds.getHeight() == 0))
+//						continue;
+//
+//					Dimension pref = KeyTipRenderingUtilities.getPrefSize(g2d
+//							.getFontMetrics(), keyTip.keyTipString);
+//
+//					Point prefCenter = keyTip.prefAnchorPoint;
+//					Point loc = SwingUtilities.convertPoint(keyTip.comp,
+//							prefCenter, this);
+//					Container bandControlPanel = SwingUtilities
+//							.getAncestorOfClass(AbstractBandControlPanel.class,
+//									keyTip.comp);
+//					if (bandControlPanel != null) {
+//						// special case for controls in threesome
+//						// ribbon band rows
+//						if (hasClientPropertySetToTrue(keyTip.comp,
+//								BasicBandControlPanelUI.TOP_ROW)) {
+//							loc = SwingUtilities.convertPoint(keyTip.comp,
+//									prefCenter, bandControlPanel);
+//							loc.y = 0;
+//							loc = SwingUtilities.convertPoint(bandControlPanel,
+//									loc, this);
+//							// prefCenter.y = 0;
+//						}
+//						if (hasClientPropertySetToTrue(keyTip.comp,
+//								BasicBandControlPanelUI.MID_ROW)) {
+//							loc = SwingUtilities.convertPoint(keyTip.comp,
+//									prefCenter, bandControlPanel);
+//							loc.y = bandControlPanel.getHeight() / 2;
+//							loc = SwingUtilities.convertPoint(bandControlPanel,
+//									loc, this);
+//							// prefCenter.y = keyTip.comp.getHeight() / 2;
+//						}
+//						if (hasClientPropertySetToTrue(keyTip.comp,
+//								BasicBandControlPanelUI.BOTTOM_ROW)) {
+//							loc = SwingUtilities.convertPoint(keyTip.comp,
+//									prefCenter, bandControlPanel);
+//							loc.y = bandControlPanel.getHeight();
+//							loc = SwingUtilities.convertPoint(bandControlPanel,
+//									loc, this);
+//							// prefCenter.y = keyTip.comp.getHeight();
+//						}
+//					}
+//
+//					KeyTipRenderingUtilities
+//							.renderKeyTip(g2d, this, new Rectangle(loc.x
+//									- pref.width / 2, loc.y - pref.height / 2,
+//									pref.width, pref.height),
+//									keyTip.keyTipString, keyTip.enabled);
+//				}
+//
+//				g2d.dispose();
+//			}
 		}
 
 		/**

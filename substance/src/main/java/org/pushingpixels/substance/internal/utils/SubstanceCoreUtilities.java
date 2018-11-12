@@ -41,6 +41,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
+import java.awt.GraphicsDevice.WindowTranslucency;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Insets;
@@ -129,8 +130,6 @@ import org.pushingpixels.substance.internal.utils.icon.TransitionAwareIcon;
 import org.pushingpixels.substance.internal.utils.menu.SubstanceMenu;
 import org.pushingpixels.substance.internal.utils.scroll.SubstanceScrollButton;
 import org.pushingpixels.trident.swing.SwingRepaintCallback;
-
-import com.sun.awt.AWTUtilities;
 
 /**
  * Various utility functions. This class is <b>for internal use only</b>.
@@ -569,9 +568,10 @@ public class SubstanceCoreUtilities {
                 }
             });
 
-            // next step, check AWTUtilities capabilities
+            // next step, check transparent window capabilities
             if (globalRoundingEnable) {
-                globalRoundingEnable = AWTUtilities.isTranslucencySupported(AWTUtilities.Translucency.PERPIXEL_TRANSPARENT);
+                // fixed for be compatible with Java 11 (require java 7)
+                globalRoundingEnable = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().isWindowTranslucencySupported(WindowTranslucency.PERPIXEL_TRANSPARENT);
             }
 
             // finally, add one listener to listen to the UIManager defaults value when the default changes.
