@@ -55,6 +55,8 @@ abstract class AbstractBandControlPanelUI extends BandControlPanelUI {
 
 	protected JCommandButton dummy;
 
+    protected int layoutGap = 4;
+
 	public static final String TOP_ROW = "flamingo.internal.ribbonBandControlPanel.topRow";
 
 	public static final String MID_ROW = "flamingo.internal.ribbonBandControlPanel.midRow";
@@ -187,9 +189,13 @@ abstract class AbstractBandControlPanelUI extends BandControlPanelUI {
 		graphics.setColor(controlPanel.getBackground());
 		graphics.fillRect(toFill.x, toFill.y, toFill.width, toFill.height);
 	}
+	
+    public void setLayoutGap(int value) {
+        layoutGap  = value;
+    }
 
 	@Override
 	public int getLayoutGap() {
-		return 4;
+		return layoutGap;
 	}
 }
